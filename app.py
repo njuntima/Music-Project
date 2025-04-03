@@ -10,7 +10,7 @@ def db():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="jasper0607",
+            password="CS4604",
             database="CS4604_Crappy_Spotify_Clone"
         )
 
