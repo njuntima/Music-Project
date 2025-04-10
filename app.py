@@ -2,7 +2,8 @@ from flask import Flask, render_template, url_for, redirect, request
 import mysql.connector
 from mysql.connector import Error
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='assets/templates', static_folder='assets/static')
+
 
 @app.route('/')
 def db():
@@ -92,5 +93,4 @@ def delete_album(album_id):
     cursor.close()
 
 if __name__ == '__main__':
-    app.run()
-    
+    app.run(debug=True)
