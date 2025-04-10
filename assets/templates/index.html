@@ -1,28 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoginPage</title>
+    <title>MusicDB</title>
     <link rel="stylesheet" href="../static/style.css">  
 </head>
 <body>
-    <main>
-        <!--<h1>{{ dbstatus }}</h1>-->
-        <div class="wrapper">
-            <form action="">
-                <h1>Welcome to MusicDB</h1>
-                <div class="input-box">
-                    <input type="text" placeholder="Username" required>
-                    <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
-                </div>
-                <div class="input-box">
-                    <input type="password" placeholder="Password" required>
-                    <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
-                </div>
+    <div class="wrapper">
+        <!-- Navigation Section -->
+        <nav class="nav">
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="#" class="link">Home</a></li>
+                    <li><a href="#" class="link">View</a></li>
+                    <li><a href="#" class="link">Account</a></li>
+                    <li><a href="#" class="link">About</a></li>
+                </ul>
+            </div>
+            <div class="nav-button">
+                <!-- The nav buttons trigger the sliding functions -->
+                <button id="loginNavBtn" onclick="showLogin()">Login</button>
+                <button id="registerNavBtn" onclick="showRegister()">Register</button>
+            </div>
+        </nav>
 
-                <button type="submit" class="btn">Login</button>
-            </form>
+        <!-- Forms Container -->
+        <div class="forms">
+            <!-- Login Form -->
+            <div class="login-container" id="login">
+                <form action="">
+                    <h1>Welcome to MusicDB</h1>
+                    <div class="input-box">
+                        <input type="text" placeholder="Username" required>
+                        <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
+                    </div>
+                    <div class="input-box">
+                        <input type="password" placeholder="Password" required>
+                        <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <!-- Link to switch to register form -->
+                    <div class="register link">
+                        <span>Don't have an account? <a href="#" onclick="showRegister()">Register</a></span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="register-container" id="register">
+                <form action="">
+                    <h1>Register to MusicDB</h1>
+                    <div class="input-box">
+                        <input type="text" placeholder="Username" required>
+                        <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
+                    </div>
+                    <div class="input-box">
+                        <input type="password" placeholder="Password" required>
+                        <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
+                    </div>
+                    <button type="submit" class="btn">Register</button>
+                    <!-- Link to switch back to login form -->
+                    <div class="login link">
+                        <span>Have an account? <a href="#" onclick="showLogin()">Login</a></span>
+                    </div>
+                </form>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <!-- JavaScript Section for form animations -->
+    <script>
+        // Get references to the login and registration containers
+        const loginForm = document.getElementById("login");
+        const registerForm = document.getElementById("register");
+
+        // Function to show the login form
+        function showLogin() {
+            // Slide login form to the center and registration offscreen to the right
+            loginForm.style.left = "0";
+            registerForm.style.left = "100%";
+        }
+
+        // Function to show the registration form
+        function showRegister() {
+            // Slide login form offscreen to the left and registration form into view
+            loginForm.style.left = "-100%";
+            registerForm.style.left = "0";
+        }
+    </script>
 </body>
 </html>
