@@ -280,3 +280,36 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-04-06 21:01:08
+
+CREATE VIEW TopSongs AS
+SELECT 
+    s.song_id,
+    s.name AS song_name,
+    s.num_streams,
+    s.year,
+    m.a_name AS artist_name,
+    al.al_title AS album_title
+FROM SONG s
+JOIN MAKES m ON s.song_id = m.song_id
+LEFT JOIN ALBUM al ON m.al_id = al.al_id;
+
+CREATE VIEW TopArtists AS
+SELECT 
+    m.a_name,
+    SUM(s.num_streams) AS total_streams
+FROM MAKES m
+JOIN SONG s ON m.song_id = s.song_id
+GROUP BY m.a_name
+ORDER BY total_streams DESC;
+
+
+CREATE VIEW ArtistProfile AS
+SELECT 
+    a.a_name,
+    al.al_title AS album_title,
+    s.name AS song_name,
+    s.num_streams
+FROM ARTIST a
+LEFT JOIN ALBUM al ON a.a_name = al.artist
+LEFT JOIN MAKES m ON al.al_id = m.al_id
+LEFT JOIN SONG s ON m.song_id = s.song_id;
