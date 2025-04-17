@@ -16,6 +16,10 @@ body {
     background-position: center;
 }
 
+.db-status{
+    color: rgb(255, 255, 255);
+}
+
 
 .wrapper {
     font-size: 16px;

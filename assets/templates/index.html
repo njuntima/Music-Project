@@ -15,13 +15,16 @@
                     <li><a href="#" class="link">Home</a></li>
                     <li><a href="#" class="link">View</a></li>
                     <li><a href="#" class="link">Account</a></li>
-                    <li><a href="#" class="link">About</a></li>
+                    <li><a href="about.html" class="link">About</a></li>
                 </ul>
             </div>
             <div class="nav-button">
                 <!-- The nav buttons trigger the sliding functions -->
                 <button id="loginNavBtn" onclick="showLogin()">Login</button>
                 <button id="registerNavBtn" onclick="showRegister()">Register</button>
+            </div>
+            <div class="db-status">
+                <span>{{ dbstatus }}</span>
             </div>
         </nav>
 
@@ -40,7 +43,7 @@
                         <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
                     </div>
                     <button type="submit" class="btn">Login</button>
-                    <!-- Link to switch to register form -->
+                    <!-- to switch to registration -->
                     <div class="register link">
                         <span>Don't have an account? <a href="#" onclick="showRegister()">Register</a></span>
                     </div>
@@ -60,7 +63,8 @@
                         <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
                     </div>
                     <button type="submit" class="btn">Register</button>
-                    <!-- Link to switch back to login form -->
+
+                    <!-- to switch to login -->
                     <div class="login link">
                         <span>Have an account? <a href="#" onclick="showLogin()">Login</a></span>
                     </div>
@@ -71,20 +75,17 @@
 
     <!-- JavaScript Section for form animations -->
     <script>
-        // Get references to the login and registration containers
+
         const loginForm = document.getElementById("login");
         const registerForm = document.getElementById("register");
 
-        // Function to show the login form
+
         function showLogin() {
-            // Slide login form to the center and registration offscreen to the right
             loginForm.style.left = "0";
             registerForm.style.left = "100%";
         }
 
-        // Function to show the registration form
         function showRegister() {
-            // Slide login form offscreen to the left and registration form into view
             loginForm.style.left = "-100%";
             registerForm.style.left = "0";
         }

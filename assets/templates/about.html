@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - MusicDB</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Navigation Section -->
+        <nav class="nav">
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="index.html" class="link">Home</a></li>
+                    <li><a href="view.html" class="link">View</a></li>
+                    <li><a href="account.html" class="link">Account</a></li>
+                    <li><a href="about.html" class="link">About</a></li>
+                </ul>
+            </div>
+            
+            <div class="db-status">
+                <span>{{ dbstatus }}</span>
+            </div>
+        </nav>
+        <div class="about-wrapper">
+            <section class="about-description">
+                <h1>About MusicDB</h1>
+                <p>This application is meant to be a Spotify clone. 
+                    It provides users with the ability to create playlists, upload songs, and enjoy a music streaming experience.</p>
+               
+            </section>
+        
+        
+        <div class="about-section-users">
+            <h2>User Types</h2>
+          
+            <!-- Admin Section -->
+            <div class="info-box">
+                <img src="../static/images/admin.svg" alt="Admin Icon" class="about-icon">
+                <h2>Admin</h2>
+                <p>The Admin can create/remove users, edit song data</p>
+            </div>
+
+            <!-- Artist Section -->
+            <div class="info-box">
+                <img src="../static/images/artist.svg" alt="Artist Icon" class="about-icon">
+                <h2>Artist</h2>
+                <p>The Artist can create albums and songs</p>
+            </div>
+
+            <!-- User Section -->
+            <div class="info-box">
+                <img src="../static/images/user.svg" alt="User Icon" class="about-icon">
+                <h2>User</h2>
+                <p>The User can create playlists and add/remove songs in their playlists</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -11,7 +11,7 @@ def db():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="CS4604",
+            password="root",
             database="CS4604_Crappy_Spotify_Clone"
         )
 
