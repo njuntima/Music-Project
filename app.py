@@ -46,14 +46,14 @@ def login():
 
     if user is None:
     
-        return render_template('index.html',info = 'User not found') 
+        return render_template('index.html',info = 'ERROR: User not found') 
 
     if user['password_hash'] == password:
-       
+        session['username'] = username 
         return redirect(url_for('home', name=username))
     else:
        
-        return render_template('index.html',info = 'Wrong password')
+        return render_template('index.html',info = 'ERROR: Wrong password')
     
     
     
@@ -76,7 +76,7 @@ def register():
 
         if existing_user:
             
-            return render_template('index.html',info = 'User already exists')
+            return render_template('index.html',info = 'ERROR: User already exists')
 
         cursor.execute("INSERT INTO user (user_name, password_hash) VALUES (%s, %s)", (username, password))
         connection.commit()
@@ -87,6 +87,42 @@ def register():
 
 
     return redirect(url_for('db'))
+
+@app.route('/form_change_password', methods=["POST"])
+def change_password():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    curr_password = request.form['curr_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+
+    if new_password != confirm_password:
+        return render_template("home.html", name=username, dbstatus="Connected", info="ERROR: New passwords do not match")
+
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        database="CS4604_Crappy_Spotify_Clone"
+    )
+    cursor = connection.cursor(dictionary=True)
+
+    # get current password
+    cursor.execute("SELECT password_hash FROM user WHERE user_name = %s", (username,))
+    user = cursor.fetchone()
+
+    if user is None or user['password_hash'] != curr_password:
+        return render_template("home.html", name=username, dbstatus="Connected", info="ERROR: Incorrect current password")
+
+    # update password
+    cursor.execute("UPDATE user SET password_hash = %s WHERE user_name = %s", (new_password, username))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return render_template("home.html", name=username, dbstatus="Connected", info="Password updated successfully")
 
 
 

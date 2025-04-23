@@ -32,6 +32,28 @@
                 <span>{{ dbstatus }}</span>
             </div>
         </nav>
+
+        <section class="change-password">
+            <h2>Change Password</h2>
+            <form action="/form_change_password" method="POST">
+                <div class="input-box">
+                    <input type="password" name="curr_password" placeholder="Current Password" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="new_password" placeholder="New Password" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
+                </div>
+                <button type="submit" class="btn">Update Password</button>
+            </form>
+            <p>{{info}}</p>
+        </section>
+        
+
+
+
+
         <div class="about-wrapper">
             <section class="about-description">
                 <h1>Welcome {{name}}!</h1>
