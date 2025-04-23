@@ -10,16 +10,8 @@
     <div class="wrapper">
         <!-- Navigation Section -->
         <nav class="nav">
-            <div class="nav-menu">
-                <ul>
-                    <li><a href="#" class="link">Home</a></li>
-                    <li><a href="#" class="link">View</a></li>
-                    <li><a href="#" class="link">Account</a></li>
-                    <li><a href="about.html" class="link">About</a></li>
-                </ul>
-            </div>
             <div class="nav-button">
-                <!-- The nav buttons trigger the sliding functions -->
+                <!-- Sliding buttons -->
                 <button id="loginNavBtn" onclick="showLogin()">Login</button>
                 <button id="registerNavBtn" onclick="showRegister()">Register</button>
             </div>
@@ -32,34 +24,37 @@
         <div class="forms">
             <!-- Login Form -->
             <div class="login-container" id="login">
-                <form action="">
+                <form action="/form_login" method ="post">
                     <h1>Welcome to MusicDB</h1>
                     <div class="input-box">
-                        <input type="text" placeholder="Username" required>
+                        <input type="text"  name="Username" placeholder="Username" required>
                         <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
                     </div>
+
                     <div class="input-box">
-                        <input type="password" placeholder="Password" required>
+                        <input type="password" name="Password" placeholder="Password" required>
                         <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
                     </div>
+                    
                     <button type="submit" class="btn">Login</button>
                     <!-- to switch to registration -->
                     <div class="register link">
                         <span>Don't have an account? <a href="#" onclick="showRegister()">Register</a></span>
                     </div>
+                    <p> ERROR: {{info}}</p>
                 </form>
             </div>
 
             <!-- Registration Form -->
             <div class="register-container" id="register">
-                <form action="">
+                <form action="/form_register" method = "post">
                     <h1>Register to MusicDB</h1>
                     <div class="input-box">
-                        <input type="text" placeholder="Username" required>
+                        <input type="text" name="Username" placeholder="Username" required>
                         <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
                     </div>
                     <div class="input-box">
-                        <input type="password" placeholder="Password" required>
+                        <input type="password" name="Password" placeholder="Password" required>
                         <img src="../static/images/lock.png" alt="Password Icon" class="input-icon">
                     </div>
                     <button type="submit" class="btn">Register</button>

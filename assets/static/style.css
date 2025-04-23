@@ -80,17 +80,20 @@ body {
 .nav-button {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
+
 
 .nav-button button {
   margin-left: 10px;
-  padding: 10px 20px;
+  padding: 5px 20px;
   border: none;
   color: rgb(0, 0, 0);
   background-color: white;
   cursor: pointer;
   border-radius: 5px;
 }
+
 
 .nav-button button:hover {
   background-color: rgba(255, 255, 255, 0.1);

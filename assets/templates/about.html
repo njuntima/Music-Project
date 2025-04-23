@@ -12,11 +12,16 @@
         <nav class="nav">
             <div class="nav-menu">
                 <ul>
-                    <li><a href="index.html" class="link">Home</a></li>
+                    <li><a href="{{ url_for('home') }}" class="link">Home</a></li>
                     <li><a href="view.html" class="link">View</a></li>
                     <li><a href="account.html" class="link">Account</a></li>
-                    <li><a href="about.html" class="link">About</a></li>
+                    <li><a href="{{ url_for('about') }}" class="link">About</a></li>
                 </ul>
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <div class="nav-button">
+                        <button type="submit" class="btn">Logout</button>
+                    </div>
+                </form>
             </div>
             
             <div class="db-status">
