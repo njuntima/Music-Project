@@ -1,20 +1,25 @@
 from flask import Flask, render_template, url_for, redirect, request,flash,session
 import mysql.connector
 from mysql.connector import Error
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, template_folder='assets/templates', static_folder='assets/static')
 app.secret_key = 'unhackablekey123'
 
 
+
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        database="CS4604_Crappy_Spotify_Clone"
+    )
+    
 @app.route('/')
 def db():
     try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="root",
-            database="CS4604_Crappy_Spotify_Clone"
-        )
+        connection = get_db_connection()
 
         return render_template('index.html', dbstatus="DB Connected")
 
@@ -32,12 +37,7 @@ def login():
     username = request.form['Username']
     password = request.form['Password']
 
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database="CS4604_Crappy_Spotify_Clone"
-    )
+    connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
     query = "SELECT * FROM user WHERE user_name = %s"
@@ -48,7 +48,7 @@ def login():
     
         return render_template('index.html',info = 'ERROR: User not found') 
 
-    if user['password_hash'] == password:
+    if check_password_hash(user['password_hash'], password):
         session['username'] = username 
         return redirect(url_for('home', name=username))
     else:
@@ -63,12 +63,7 @@ def register():
         username = request.form['Username']
         password = request.form['Password']
 
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="root",
-            database="CS4604_Crappy_Spotify_Clone"
-        )
+        connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
         cursor.execute("SELECT * FROM user WHERE user_name = %s", (username,))
@@ -78,6 +73,8 @@ def register():
             
             return render_template('index.html',info = 'ERROR: User already exists')
 
+
+        password = generate_password_hash(password)
         cursor.execute("INSERT INTO user (user_name, password_hash) VALUES (%s, %s)", (username, password))
         connection.commit()
         
@@ -90,39 +87,39 @@ def register():
 
 @app.route('/form_change_password', methods=["POST"])
 def change_password():
+    # 1) Ensure user is logged in
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('db'))
 
     username = session['username']
-    curr_password = request.form['curr_password']
-    new_password = request.form['new_password']
+    curr_password    = request.form['curr_password']
+    new_password     = request.form['new_password']
     confirm_password = request.form['confirm_password']
 
-    if new_password != confirm_password:
-        return render_template("home.html", name=username, dbstatus="Connected", info="ERROR: New passwords do not match")
-
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database="CS4604_Crappy_Spotify_Clone"
-    )
+    connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-
-    # get current password
-    cursor.execute("SELECT password_hash FROM user WHERE user_name = %s", (username,))
+    cursor.execute( "SELECT password_hash FROM user WHERE user_name = %s",(username,))
     user = cursor.fetchone()
 
-    if user is None or user['password_hash'] != curr_password:
-        return render_template("home.html", name=username, dbstatus="Connected", info="ERROR: Incorrect current password")
+    if user is None or not check_password_hash(user['password_hash'], curr_password):
+        cursor.close()
+        connection.close()
+        return render_template("home.html",name=username,dbstatus="Connected",info="ERROR: Incorrect current password")
 
-    # update password
-    cursor.execute("UPDATE user SET password_hash = %s WHERE user_name = %s", (new_password, username))
+
+    if new_password != confirm_password:
+        cursor.close()
+        connection.close()
+        return render_template("home.html",name=username, dbstatus="Connected", info="ERROR: New passwords do not match")
+
+  
+    new_hash = generate_password_hash(new_password)
+    cursor.execute("UPDATE user SET password_hash = %s WHERE user_name = %s", (new_hash, username))
     connection.commit()
     cursor.close()
     connection.close()
 
-    return render_template("home.html", name=username, dbstatus="Connected", info="Password updated successfully")
+    return render_template("home.html",name=username, dbstatus="Connected",info="Password updated successfully")
 
 
 
