@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}MusicDB - View{% endblock %}
+
+{% block dbstatus %}{{ dbstatus }}{% endblock %}
+
+{% block content %}
+  <h2>Top Songs</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Song Name</th>
+        <th>Streams</th>
+        <th>Hours Streamed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in topsongs %}
+      <tr>
+        <td>{{ s.song_id }}</td>
+        <td>{{ s.song_name }}</td>
+        <td>{{ s.num_streams }}</td>
+        <td>{{ s.hours_streamed }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

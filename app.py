@@ -206,5 +206,24 @@ def delete_album(album_id):
     mysql.connection.commit()
     cursor.close()
 
+@app.route('/view')
+def view():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Top100Songs")
+    topsongs = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'view.html',
+        dbstatus="Connected",
+        topsongs=topsongs
+    )
+
+@app.route('/account')
+def account():
+    return render_template('account.html', content="DBAccount")
+
 if __name__ == '__main__':
     app.run(debug=True)
