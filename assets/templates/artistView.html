@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}Artist Dashboard{% endblock %}
+{% block content %}
+<section class="artist-section">
+    {% if artist_rank %}
+    <p class="artist-rank">
+        Your global rank by total hours streamed:
+        <strong>#{{ artist_rank }}</strong>
+    </p>
+    {% endif %}
+
+    <h2>Top 10 Songs</h2>
+    <table class="stats-table">
+        <tr>
+            <th>Song</th>
+            <th>Total Streams</th>
+            <th>Hours Streamed</th>
+            <th>Avg % Listened</th>
+        </tr>
+        {% for s in top_songs %}
+        <tr>
+            <td>{{ s.song_name }}</td>
+            <td>{{ s.total_streams }}</td>
+            <td>{{ s.hours_streamed }}</td>
+            <td>{{ s.avg_pct_listened }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td><em>Others</em></td>
+            <td>{{ others.total_streams }}</td>
+            <td>{{ others.hours_streamed }}</td>
+            <td>{{ others.avg_pct_listened or '–' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total</strong></td>
+            <td>{{ totals.total_streams }}</td>
+            <td>{{ totals.hours_streamed }}</td>
+            <td>{{ totals.avg_pct_listened }}</td>
+        </tr>
+    </table>
+
+    <h2>Albums</h2>
+    <table class="stats-table">
+        <tr>
+            <th>Album</th>
+            <th>Total Streams</th>
+            <th>Hours Streamed</th>
+        </tr>
+        {% for a in albums %}
+        <tr>
+            <td>{{ a.album_title }}</td>
+            <td>{{ a.total_streams }}</td>
+            <td>{{ a.hours_streamed }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</section>
+
+<style>
+    .artist-section {
+        margin: 80px 20px;
+    }
+
+    .artist-rank {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+</style>
+{% endblock %}

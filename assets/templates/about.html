@@ -1,42 +1,46 @@
 {% extends "layout.html" %}
+
 {% block title %}
 MusicDB - About
 {% endblock %}
+
 {% block dbstatus %}
 {{ dbstatus }}
 {% endblock %}
+
 {% block content %}
 <div class="about-wrapper">
     <section class="about-description">
         <h1>About MusicDB</h1>
-        <p>This application is meant to be a Spotify clone. 
-            It provides users with the ability to create playlists, upload songs, and enjoy a music streaming experience.</p>
-       
+        <p>This application is meant to be a Spotify clone.
+            It provides users with the ability to create playlists, upload songs, and enjoy a music streaming
+            experience.</p>
+
     </section>
 
 
-<div class="about-section-users">
-    <h2>User Types</h2>
-  
-    <!-- Admin Section -->
-    <div class="info-box">
-        <img src="../static/images/admin.svg" alt="Admin Icon" class="about-icon">
-        <h2>Admin</h2>
-        <p>The Admin can create/remove users, edit song data</p>
-    </div>
+    <div class="about-section-users">
+        <h2>User Types</h2>
 
-    <!-- Artist Section -->
-    <div class="info-box">
-        <img src="../static/images/artist.svg" alt="Artist Icon" class="about-icon">
-        <h2>Artist</h2>
-        <p>The Artist can create albums and songs</p>
-    </div>
+        <!-- Admin Section -->
+        <div class="info-box">
+            <img src="../static/images/admin.svg" alt="Admin Icon" class="about-icon">
+            <h2>Admin</h2>
+            <p>The Admin can create/remove users, edit song data</p>
+        </div>
 
-    <!-- User Section -->
-    <div class="info-box">
-        <img src="../static/images/user.svg" alt="User Icon" class="about-icon">
-        <h2>User</h2>
-        <p>The User can create playlists and add/remove songs in their playlists</p>
+        <!-- Artist Section -->
+        <div class="info-box">
+            <img src="../static/images/artist.svg" alt="Artist Icon" class="about-icon">
+            <h2>Artist</h2>
+            <p>The Artist can create albums and songs</p>
+        </div>
+
+        <!-- User Section -->
+        <div class="info-box">
+            <img src="../static/images/user.svg" alt="User Icon" class="about-icon">
+            <h2>User</h2>
+            <p>The User can create playlists and add/remove songs in their playlists</p>
+        </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

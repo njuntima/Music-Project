@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<section class="admin-section">
+    <h1>System Counts</h1>
+    <table class="stats-table">
+        <tr>
+            <th>Users</th>
+            <th>Artists</th>
+            <th>Songs</th>
+            <th>Playlists</th>
+            <th>Stream Events</th>
+            <th>Hours</th>
+        </tr>
+        <tr>
+            <td>{{ system_counts.total_users }}</td>
+            <td>{{ system_counts.total_artists }}</td>
+            <td>{{ system_counts.total_songs }}</td>
+            <td>{{ system_counts.total_playlists }}</td>
+            <td>{{ system_counts.num_stream_events }}</td>
+            <td>{{ system_counts.hours_streamed }}</td>
+        </tr>
+    </table>
+
+    <h2>Playlist Performance</h2>
+    <table class="stats-table">
+        <tr>
+            <th>Type</th>
+            <th>Streams</th>
+            <th>Hours</th>
+        </tr>
+        {% for row in playlist_perf %}
+        <tr>
+            <td>{{ row.playlist_type }}</td>
+            <td>{{ row.total_streams }}</td>
+            <td>{{ row.hours_streamed }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Hourly Stream Count</h2>
+    {{ chart }}
+</section>
+
+<style>
+    .admin-section {
+        margin: 80px 20px;
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+</style>
+{% endblock %}

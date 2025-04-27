@@ -2,9 +2,12 @@ from flask import Flask, render_template, url_for, redirect, request, flash, ses
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
+from chartkick.flask import chartkick_blueprint, LineChart
 
 app = Flask(__name__, template_folder='assets/templates', static_folder='assets/static')
 app.secret_key = 'unhackablekey123'
+app.register_blueprint(chartkick_blueprint)
+
 
 def get_db_connection():
     try:
@@ -56,6 +59,8 @@ def login():
 
     if check_password_hash(user['password_hash'], password):
         session['username'] = username 
+        session['role'] = user['role']
+        print(session.get('role'))
         return redirect(url_for('home', name=username))
     else:
         return render_template('index.html',info = 'ERROR: Wrong password')
@@ -130,6 +135,7 @@ def change_password():
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)  
+    session.pop('role', None)  
     return redirect(url_for('db')) 
     
     
@@ -229,26 +235,6 @@ def delete_album(album_id):
     mysql.connection.commit()
     cursor.close()
 
-@app.route('/view')
-def view():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Top100Songs")
-    topsongs = cursor.fetchall()
-    cursor.execute("SELECT * FROM Top100Artists")
-    topartists = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    print(topsongs)
-    print(topartists)
-
-    return render_template(
-        'view.html',
-        dbstatus="Connected",
-        topsongs=topsongs,
-        topartists=topartists
-    )
-
 @app.route('/account')
 def account():
     if 'username' not in session:
@@ -276,6 +262,183 @@ def artist_dashboard():
     albums = cursor.fetchall()
 
     return render_template('artist.html', artist=artist, albums=albums)
+    return render_template('account.html', content="DB Account")
+
+@app.route('/view')
+def view():
+    if session.get('role') == 'admin':
+        return redirect(url_for('admin'))
+    
+    if session.get('role') == 'user':
+        return redirect(url_for('user'))
+    
+    if session.get('role') == 'artist':
+        return redirect(url_for('artist'))
+    
+    return render_template(
+        'view.html',
+        dbstatus="Connected",
+        content=session.get('role')
+    )
+
+
+@app.route('/admin')
+def admin():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # SystemCounts
+    cursor.execute("SELECT * FROM SystemCounts;")
+    system_counts = cursor.fetchone()
+
+    # PlaylistPerformance
+    cursor.execute("SELECT * FROM PlaylistPerformance;")
+    playlist_perf = cursor.fetchall()
+
+    # HourlyStreamCount → prepare data for Chartkick
+    cursor.execute("""
+      SELECT stream_date, stream_hour, stream_count
+        FROM HourlyStreamCount
+       ORDER BY stream_date, stream_hour;
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    chart_data = [
+        [f"{r['stream_date']} {r['stream_hour']}:00", r['stream_count']]
+        for r in rows
+    ]
+
+    # create a LineChart instance
+    chart = LineChart(
+        chart_data,
+        xtitle="Date & Hour",
+        ytitle="Stream Count",
+        curve=False,     # straight lines
+        points=False     # hide individual points
+    )
+
+    return render_template(
+        'adminView.html',
+        system_counts=system_counts,
+        playlist_perf=playlist_perf,
+        chart=chart
+    )
+
+@app.route('/artist')
+def artist():
+    role = session.get('role')
+    user = session.get('username')
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if role == 'artist':
+        # 1) Compute this artist's global rank by total hours streamed
+        cursor.execute("""
+          SELECT artist_rank FROM (
+            SELECT
+              m.a_name                            AS artist_name,
+              ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed,
+              ROW_NUMBER() OVER (
+                ORDER BY SUM(sl.stream_duration) DESC
+              ) AS artist_rank
+            FROM STREAM_LOG sl
+            JOIN MAKES m ON sl.song_id = m.song_id
+            GROUP BY m.a_name
+          ) ranked
+          WHERE artist_name = %s
+        """, (user,))
+        artist_rank = cursor.fetchone().get('artist_rank', None)
+        
+        # 2) Top 10 songs
+        cursor.execute("""
+          SELECT song_id, song_name,
+                 num_streams  AS total_streams,
+                 hours_streamed,
+                 avg_pct_listened
+            FROM ArtistSongStats
+           WHERE artist_name = %s
+           ORDER BY hours_streamed DESC
+           LIMIT 10
+        """, (user,))
+        top_songs = cursor.fetchall()
+
+        # Totals across all songs
+        cursor.execute("""
+          SELECT
+            SUM(num_streams)       AS total_streams,
+            SUM(hours_streamed)    AS hours_streamed,
+            ROUND( AVG(avg_pct_listened), 2 ) AS avg_pct_listened
+          FROM ArtistSongStats
+          WHERE artist_name = %s
+        """, (user,))
+        totals = cursor.fetchone()
+
+        # “Others” = everything beyond top 10
+        # (we’ll compute these in Python by subtracting)
+        others = {
+          'total_streams':   totals['total_streams']   - sum(r['total_streams']   for r in top_songs),
+          'hours_streamed':  totals['hours_streamed']  - sum(r['hours_streamed']  for r in top_songs),
+          'avg_pct_listened': None  # optional: leave blank or compute weighted avg
+        }
+
+        # 3) Albums stats (per-album view)
+        cursor.execute("""
+          SELECT
+            al.al_id       AS album_id,
+            al.al_title    AS album_title,
+            COUNT(sl.log_id)                 AS total_streams,
+            ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
+          FROM ALBUM al
+          JOIN MAKES m  ON al.al_id = m.al_id
+          JOIN SONG s   ON m.song_id = s.song_id
+          LEFT JOIN STREAM_LOG sl ON s.song_id = sl.song_id
+          WHERE m.a_name = %s
+          GROUP BY al.al_id, al.al_title
+          ORDER BY hours_streamed DESC
+        """, (user,))
+        albums = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return render_template(
+          'artistView.html',
+          artist_rank=artist_rank,
+          top_songs=top_songs,
+          others=others,
+          totals=totals,
+          albums=albums
+        )
+    
+@app.route('/user')
+def user():
+        conn   = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1) FavoritePlaylists
+        cursor.execute("SELECT * FROM FavoritePlaylists;")
+        fav_playlists = cursor.fetchall()
+
+        # 2) FavoriteSongs
+        cursor.execute("SELECT * FROM FavoriteSongs;")
+        fav_songs = cursor.fetchall()
+
+        # 3) FavoriteGenres
+        cursor.execute("SELECT * FROM FavoriteGenres;")
+        fav_genres = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return render_template(
+            'userView.html',
+            favorite_playlists=fav_playlists,
+            favorite_songs=fav_songs,
+            favorite_genres=fav_genres
+        )
+
 
 if __name__ == '__main__':
     app.run(debug=True)
