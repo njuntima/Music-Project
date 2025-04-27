@@ -76,6 +76,9 @@ body {
   border-radius: 10px;
 }
 
+h2 {
+  color: rgb(255, 255, 255);
+}
 
 .nav-button {
   display: flex;
@@ -212,6 +215,9 @@ body {
   margin-top: 50px;
   text-align: center;
   backdrop-filter: blur(20px);
+  padding: 20px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
 }
 
 .about-description h1{
