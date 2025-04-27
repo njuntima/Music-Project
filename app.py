@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request,flash,session
+from flask import Flask, render_template, url_for, redirect, request, flash, session
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,15 +6,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__, template_folder='assets/templates', static_folder='assets/static')
 app.secret_key = 'unhackablekey123'
 
-
-
 def get_db_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database="CS4604_Crappy_Spotify_Clone"
-    )
+    try:
+        connection =  mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root",
+            database="CS4604_Crappy_Spotify_Clone", 
+            ssl_disabled=True 
+        )
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        print(f"Error: {e}")
+        return None
     
 @app.route('/')
 def db():
@@ -29,8 +34,9 @@ def db():
 
 @app.route('/home')
 def home():
-    name = request.args.get('name') 
-    return render_template('home.html', name=name)
+    if 'username' not in session:
+        return redirect(url_for('db'))
+    return render_template('home.html', name=session.get('username'))
   
 @app.route('/form_login',methods=["POST","GET"])
 def login():
@@ -40,7 +46,7 @@ def login():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
-    query = "SELECT * FROM user WHERE user_name = %s"
+    query = "SELECT * FROM USER WHERE user_name = %s"
     cursor.execute(query, (username,))
     user = cursor.fetchone()
 
@@ -52,10 +58,7 @@ def login():
         session['username'] = username 
         return redirect(url_for('home', name=username))
     else:
-       
         return render_template('index.html',info = 'ERROR: Wrong password')
-    
-    
     
 @app.route('/form_register', methods=["GET", "POST"])
 def register():
@@ -66,7 +69,7 @@ def register():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
-        cursor.execute("SELECT * FROM user WHERE user_name = %s", (username,))
+        cursor.execute("SELECT * FROM USER WHERE user_name = %s", (username,))
         existing_user = cursor.fetchone()
 
         if existing_user:
@@ -75,7 +78,7 @@ def register():
 
 
         password = generate_password_hash(password)
-        cursor.execute("INSERT INTO user (user_name, password_hash) VALUES (%s, %s)", (username, password))
+        cursor.execute("INSERT INTO USER (user_name, password_hash) VALUES (%s, %s)", (username, password))
         connection.commit()
         
         
@@ -98,7 +101,7 @@ def change_password():
 
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute( "SELECT password_hash FROM user WHERE user_name = %s",(username,))
+    cursor.execute( "SELECT password_hash FROM USER WHERE user_name = %s",(username,))
     user = cursor.fetchone()
 
     if user is None or not check_password_hash(user['password_hash'], curr_password):
@@ -114,7 +117,7 @@ def change_password():
 
   
     new_hash = generate_password_hash(new_password)
-    cursor.execute("UPDATE user SET password_hash = %s WHERE user_name = %s", (new_hash, username))
+    cursor.execute("UPDATE USER SET password_hash = %s WHERE user_name = %s", (new_hash, username))
     connection.commit()
     cursor.close()
     connection.close()
