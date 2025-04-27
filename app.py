@@ -2,10 +2,11 @@ from flask import Flask, render_template, url_for, redirect, request,flash,sessi
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
+from chartkick.flask import chartkick_blueprint, LineChart
 
 app = Flask(__name__, template_folder='assets/templates', static_folder='assets/static')
 app.secret_key = 'unhackablekey123'
-
+app.register_blueprint(chartkick_blueprint)
 
 
 def get_db_connection():
@@ -50,6 +51,8 @@ def login():
 
     if check_password_hash(user['password_hash'], password):
         session['username'] = username 
+        session['role'] = user['role']
+        print(session.get('role'))
         return redirect(url_for('home', name=username))
     else:
        
@@ -127,6 +130,7 @@ def change_password():
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)  
+    session.pop('role', None)  
     return redirect(url_for('db')) 
     
     
@@ -215,6 +219,9 @@ def view():
     cursor.close()
     conn.close()
 
+    if session.get('role') == 'admin':
+        return redirect(url_for('admin'))
+
     return render_template(
         'view.html',
         dbstatus="Connected",
@@ -223,7 +230,54 @@ def view():
 
 @app.route('/account')
 def account():
-    return render_template('account.html', content="DBAccount")
+    return render_template('account.html', content="DB Account")
+
+
+@app.route('/admin')
+def admin():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # SystemCounts
+    cursor.execute("SELECT * FROM SystemCounts;")
+    system_counts = cursor.fetchone()
+
+    # PlaylistPerformance
+    cursor.execute("SELECT * FROM PlaylistPerformance;")
+    playlist_perf = cursor.fetchall()
+
+    # HourlyStreamCount → prepare data for Chartkick
+    cursor.execute("""
+      SELECT stream_date, stream_hour, stream_count
+        FROM HourlyStreamCount
+       ORDER BY stream_date, stream_hour;
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    chart_data = [
+        [f"{r['stream_date']} {r['stream_hour']}:00", r['stream_count']]
+        for r in rows
+    ]
+
+    # create a LineChart instance
+    chart = LineChart(
+        chart_data,
+        xtitle="Date & Hour",
+        ytitle="Stream Count",
+        curve=False,     # straight lines
+        points=False     # hide individual points
+    )
+
+    return render_template(
+        'adminView.html',
+        system_counts=system_counts,
+        playlist_perf=playlist_perf,
+        chart=chart
+    )
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

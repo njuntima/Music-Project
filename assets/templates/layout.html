@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="../static/style.css">
+
+    <!-- Chartkick / Chart.js -->
+    <script src="{{ url_for('chartkick.static', filename='Chart.bundle.js') }}"></script>
+    <script src="{{ url_for('chartkick.static', filename='chartkick.js') }}"></script>
 </head>
+
 <body>
     <div class="wrapper">
         <!-- Navigation Section -->
@@ -16,16 +22,16 @@
                     <li><a href="{{ url_for('view') }}" class="link">View</a></li>
                     <li><a href="{{ url_for('account') }}" class="link">Account</a></li>
                     <li><a href="{{ url_for('about') }}" class="link">About</a></li>
-                    
+
                 </ul>
-                
+
             </div>
             <div class="nav-button">
                 <form id="logout-form" action="{{ url_for('logout') }}" method="POST">
                     <button type="submit" class="btn">Logout</button>
                 </form>
             </div>
-            
+
             {#<div class="db-status">
                 <span>{% block dbstatus %}{% endblock %}</span>
             </div>#}
@@ -37,6 +43,7 @@
     </div>
 
 
-</div>
+    </div>
 </body>
+
 </html>

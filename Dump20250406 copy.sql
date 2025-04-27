@@ -361,10 +361,10 @@ INSERT INTO `STREAM_LOG` (`user_name`,`song_id`,`p_id`,`streamed_at`,`stream_dur
   ('ryanreynolds',15, 2, '2025-04-27 12:35:00', 172, 'no'),
   ('robertpark',  16, 3, '2025-04-27 13:00:00', 223, 'no'),
   ('robertpark',  17, 3, '2025-04-27 13:05:00', 100, 'yes'),
-  ('rachelgreen', 18, 4, '2025-04-27 14:11:00', 196, 'no'),
-  ('rachelgreen', 19, 5, '2025-04-27 14:15:00', 235, 'no'),
-  ('ryanreynolds',20, 6, '2025-04-27 15:00:00', 228, 'no'),
-  ('sophialee',   1, 1, '2025-04-27 15:05:00',  50, 'yes');
+  ('rachelgreen', 18, NULL, '2025-04-27 14:11:00', 196, 'no'),
+  ('rachelgreen', 19, NULL, '2025-04-27 14:15:00', 235, 'no'),
+  ('ryanreynolds',20, NULL, '2025-04-27 15:00:00', 228, 'no'),
+  ('sophialee',   1, NULL, '2025-04-27 15:05:00',  50, 'yes');
 /*!40000 ALTER TABLE `STREAM_LOG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -627,6 +627,36 @@ WHERE sl.streamed_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
 GROUP BY m.a_name
 ORDER BY num_streams DESC
 LIMIT 100;
+
+
+-- =======================================================
+-- Helper Views
+-- =======================================================
+
+DROP VIEW IF EXISTS WeeklySummary;
+CREATE VIEW WeeklySummary AS
+SELECT
+  sl.song_id                AS song_id,
+  s.name                    AS song_name,
+  m.a_name                  AS artist_id,
+  m.a_name                  AS artist_name,
+  YEARWEEK(sl.streamed_at,1) AS yearweek,
+  COUNT(*)                  AS stream_count,
+  SUM(sl.stream_duration)/3600   AS stream_duration_hr,
+  -- average percentage of streams that were skipped
+  ROUND(
+    SUM(CASE WHEN sl.skipped = 'yes' THEN 1 ELSE 0 END)
+    / COUNT(*) * 100
+  , 2)                        AS avg_pct_skipped
+FROM STREAM_LOG sl
+JOIN MAKES m  ON sl.song_id = m.song_id
+JOIN SONG s   ON sl.song_id = s.song_id
+GROUP BY
+  sl.song_id,
+  s.name,
+  m.a_name,
+  YEARWEEK(sl.streamed_at,1);
+
 
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
