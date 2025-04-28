@@ -14,7 +14,7 @@ def get_db_connection():
         connection =  mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root",
+            #password="root",
             database="CS4604_Crappy_Spotify_Clone", 
             ssl_disabled=True 
         )
@@ -174,41 +174,144 @@ def insert_artist():
     cursor.close()
     return redirect(url_for('artist_dashboard'))
 
+@app.route("/create_playlist", methods=["POST"])
+def create_playlist():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    playlist_name = request.form['p_name']
+    cursor.execute("INSERT INTO PLAYLIST (p_name) VALUES (%s)", (playlist_name,))
+    conn.commit()
+    cursor.close()
+    flash("Playlist created successfully!")
+    print("Done!")
+    return redirect(url_for('home'))
+
+
+@app.route('/add_song_to_playlist', methods=['POST'])
+def add_song_to_playlist():
+    playlist_name = request.form['p_name']  # Playlist name from the form
+    song_name = request.form['name']  # Song name from the form
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Retrieve playlist_id based on playlist_name
+        cursor.execute('SELECT p_id FROM playlist WHERE p_name = %s', (playlist_name,))
+        playlist_result = cursor.fetchone()
+        if not playlist_result:
+            flash(f'Playlist with name "{playlist_name}" not found.', 'error')
+            return redirect(url_for('index'))
+
+        playlist_id = playlist_result['p_id']
+
+        # Retrieve song_id based on song_name
+        cursor.execute('SELECT song_id FROM songs WHERE song_name = %s', (song_name,))
+        song_result = cursor.fetchone()
+        if not song_result:
+            flash(f'Song with name "{song_name}" not found.', 'error')
+            return redirect(url_for('index'))
+
+        song_id = song_result['song_id']
+
+        # Insert into the composed_of join table
+        cursor.execute(
+            'INSERT INTO composed_of (p_id, song_id) VALUES (%s, %s)',
+            (playlist_id, song_id)
+        )
+        conn.commit()
+        flash('Song added to playlist successfully!', 'success')
+
+    except Exception as e:
+        conn.rollback()
+        flash(f'Error adding song to playlist: {e}', 'error')
+    
+    finally:
+        conn.close()
+
+    return redirect(url_for('view'))
+
+@app.route('/remove_song_from_playlist', methods=['POST'])
+def remove_song_from_playlist():
+    playlist_name = request.form['p_name']  # Playlist name from the form
+    song_name = request.form['name']  # Song name from the form
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Retrieve playlist_id based on playlist_name
+        cursor.execute('SELECT p_id FROM playlist WHERE p_name = %s', (playlist_name,))
+        playlist_result = cursor.fetchone()
+        if not playlist_result:
+            flash(f'Playlist with name "{playlist_name}" not found.', 'error')
+            return redirect(url_for('index'))
+
+        playlist_id = playlist_result['p_id']
+
+        # Retrieve song_id based on song_name
+        cursor.execute('SELECT song_id FROM song WHERE song_name = %s', (song_name,))
+        song_result = cursor.fetchone()
+        if not song_result:
+            flash(f'Song with name "{song_name}" not found.', 'error')
+            return redirect(url_for('index'))
+
+        song_id = song_result['song_id']
+
+        # Delete from the composed_of join table
+        cursor.execute(
+            'DELETE FROM composed_of WHERE p_id = %s AND song_id = %s',
+            (playlist_id, song_id)
+        )
+        conn.commit()
+        flash('Song removed from playlist successfully!', 'success')
+
+    except Exception as e:
+        conn.rollback()
+        flash(f'Error removing song from playlist: {e}', 'error')
+
+    finally:
+        conn.close()
+
+    return redirect(url_for('view'))
+
 
 
 @app.route('/insert_song', methods=["POST"])
 def insert_song():
     print("insert song endpoint")
-    song_id = request.form['song_id']
+    #song_id = request.form['song_id']
     name = request.form['name']
-    num_streams = request.form['num_streams']
+    #num_streams = request.form['num_streams']
     year = request.form['year']
 
-    cursor = mysql.connection.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO songs (song_id, name, num_streams, year) VALUES (%s, %s, %s, %s)",
-        (song_id, name, num_streams, year)
+        "INSERT INTO song (name, year) VALUES (%s, %s)",
+        (name, year)
     )
-    mysql.connection.commit()
+    conn.commit()
     cursor.close()
-    return redirect(url_for('db'))
+    return redirect(url_for('artist_dashboard'))
 
 @app.route('/insert_album', methods=["POST"])
 def insert_album():
     print("insert album endpoint")
-    al_id = request.form['al_id']
+    #al_id = request.form['al_id']
     al_title = request.form['al_title']
     year = request.form['year']
     artist = request.form['artist']
 
-    cursor = mysql.connection.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO albums (al_id, al_title, year, artist) VALUES (%s, %s, %s, %s)",
-        (al_id, al_title, year, artist)
+        "INSERT INTO album (al_title, year, artist) VALUES (%s, %s, %s)",
+        (al_title, year, artist)
     )
-    mysql.connection.commit()
+    conn.commit()
     cursor.close()
-    return redirect(url_for('db'))
+    return redirect(url_for('artist_dashboard'))
 
 @app.route('/delete_artist', methods=["DELETE"])
 def delete_artist(artist_id):
@@ -219,13 +322,16 @@ def delete_artist(artist_id):
     cursor.close()
     return redirect(url_for('db')) 
 
-@app.route('/delete_song', methods=["DELETE"])
-def delete_song(song_id):
+@app.route('/delete_song', methods=["POST"])
+def delete_song():
     print('delete song endpoint')
-    cursor = mysql.connection.cursor()
-    cursor.execute("DELETE FROM songs WHERE song_id = %s", (song_id,))
-    mysql.connection.commit()
+    songName = request.form['name']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM song WHERE name = %s", (songName,))
+    conn.commit()
     cursor.close()
+    return redirect(url_for('Artist'))
 
 @app.route('/delete_album', methods=["DELETE"])
 def delete_album(album_id):
