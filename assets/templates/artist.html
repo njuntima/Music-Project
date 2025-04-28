@@ -6,13 +6,12 @@
 
 {% block content %}
 {% if artist.artist %}
-    <h1>Bruh</h1>
 {% else %}
     <div class="register-artist-container" id="register_artist">
-        <form action="/form_register_artist" method = "post">
+        <form action="/insert_artist" method = "post">
             <h1>Register as Artist to MusicDB</h1>
             <div class="input-box">
-                <input type="text" name="ArtistName" placeholder="Artist Name" required>
+                <input type="text" name="artist_name" placeholder="Artist Name" required>
                 <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
             </div>
             <button type="submit" class="btn">Register</button>

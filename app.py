@@ -140,11 +140,16 @@ def about():
 
 @app.route('/insert_artist', methods=["POST"])
 def insert_artist():
-    print("insert artist endpoint")
-    a_name = request.form['a_name']  # should be request, not requests
-    cursor = mysql.connection.cursor()
-    cursor.execute("INSERT INTO artists (a_name) VALUES (%s)", (a_name,))
-    mysql.connection.commit()
+    if 'username' not in session:
+        return redirect(url_for('db'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    a_name = request.form['artist_name']
+    cursor.execute("INSERT INTO ARTIST (a_name) VALUES (%s)", (a_name,))
+    conn.commit()
+    cursor.execute("UPDATE USER SET artist = %s WHERE user_name = %s", (a_name, session['username']))
+    conn.commit()
     cursor.close()
     return redirect(url_for('db'))
 
@@ -252,8 +257,6 @@ def artist_dashboard():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT artist FROM USER WHERE user_name = %s", ((session['username']),))
     artist = cursor.fetchall()
-
-    print(artist)
 
     return render_template('artist.html', artist=artist)
 
