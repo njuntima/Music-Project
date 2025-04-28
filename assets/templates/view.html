@@ -26,4 +26,25 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <h2>Top Artists</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Artist Name</th>
+        <th>Streams</th>
+        <th>Hours Streamed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in topartists%}
+      <tr>
+        <td>{{ a.artist_name }}</td>
+        <td>{{ a.num_streams }}</td>
+        <td>{{ a.hours_streamed }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
+

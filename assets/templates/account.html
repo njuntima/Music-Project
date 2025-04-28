@@ -1,9 +1,14 @@
 {% extends "layout.html" %}
 
-{% block title %}
-Account
-{% endblock %}
+{% block title %} Account {% endblock %}
 
 {% block content %}
-<p>{{ content }}</p>
+<h1>{{ content }}</h1>
+{% if role.admin %}
+    <h2>Admin</h2>
+{% elif role.artist %}
+    <h2>{{ role.artist }}</h2>
+{% else %}
+    <h2>User</h2>
+{% endif %}
 {% endblock %}

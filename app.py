@@ -215,18 +215,33 @@ def view():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM Top100Songs")
     topsongs = cursor.fetchall()
+    cursor.execute("SELECT * FROM Top100Artists")
+    topartists = cursor.fetchall()
     cursor.close()
     conn.close()
+    print(topsongs)
+    print(topartists)
 
     return render_template(
         'view.html',
         dbstatus="Connected",
-        topsongs=topsongs
+        topsongs=topsongs,
+        topartists=topartists
     )
 
 @app.route('/account')
 def account():
-    return render_template('account.html', content="DBAccount")
+    if 'username' not in session:
+        return redirect(url_for('db'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT artist, admin FROM USER WHERE user_name = %s", ((session['username']),))
+    role = cursor.fetchone()
+
+    print(role)
+
+    return render_template('account.html', content=session['username'], role=role)
 
 if __name__ == '__main__':
     app.run(debug=True)
