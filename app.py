@@ -14,7 +14,7 @@ def get_db_connection():
         connection =  mysql.connector.connect(
             host="localhost",
             user="root",
-            #password="root",
+            password="root",
             database="CS4604_Crappy_Spotify_Clone", 
             ssl_disabled=True 
         )
@@ -179,7 +179,14 @@ def create_playlist():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     playlist_name = request.form['p_name']
-    cursor.execute("INSERT INTO PLAYLIST (p_name) VALUES (%s)", (playlist_name,))
+    creator = session['username']
+    is_pub   = request.form.get('is_public', 'private')
+
+    cursor.execute(
+      "INSERT INTO PLAYLIST (p_name, creator, is_public) VALUES (%s, %s, %s)",
+      (playlist_name, creator, is_pub)
+    )
+
     conn.commit()
     cursor.close()
     flash("Playlist created successfully!")
@@ -372,6 +379,14 @@ def artist_dashboard():
 
 @app.route('/view')
 def view():
+    return render_template(
+        'view.html',
+        dbstatus="Connected",
+        content=session.get('role')
+    )
+
+@app.route('/stats')
+def stats():
     if session.get('role') == 'admin':
         return redirect(url_for('admin'))
     
@@ -520,30 +535,74 @@ def artist():
     
 @app.route('/user')
 def user():
-        conn   = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+    user = session.get('username')
 
-        # 1) FavoritePlaylists
-        cursor.execute("SELECT * FROM FavoritePlaylists;")
-        fav_playlists = cursor.fetchall()
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
-        # 2) FavoriteSongs
-        cursor.execute("SELECT * FROM FavoriteSongs;")
-        fav_songs = cursor.fetchall()
+    # 3a) FavoritePlaylists for this user
+    cursor.execute("""
+      SELECT
+        p.p_id,
+        p.p_name,
+        COUNT(sl.log_id)                    AS num_streams,
+        ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed,
+        ROUND(
+          SUM(CASE WHEN sl.skipped='yes' THEN 1 ELSE 0 END)
+          / NULLIF(SUM(sl.stream_duration)/3600,0)
+        ,2) AS avg_skips_per_hour
+      FROM PLAYLIST p
+      JOIN STREAM_LOG sl ON p.p_id = sl.p_id
+      WHERE sl.user_name = %s
+      GROUP BY p.p_id, p.p_name
+      ORDER BY hours_streamed DESC
+      LIMIT 5;
+    """, (user,))
+    favorite_playlists = cursor.fetchall()
 
-        # 3) FavoriteGenres
-        cursor.execute("SELECT * FROM FavoriteGenres;")
-        fav_genres = cursor.fetchall()
+    # 3b) FavoriteSongs for this user
+    cursor.execute("""
+      SELECT
+        s.song_id,
+        s.name        AS song_name,
+        sg.genre      AS genre,
+        COUNT(*)      AS num_streams,
+        ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
+      FROM STREAM_LOG sl
+      JOIN SONG s    ON sl.song_id = s.song_id
+      JOIN S_GENRE sg ON s.song_id = sg.song_id
+      WHERE sl.user_name = %s
+      GROUP BY s.song_id, sg.genre
+      ORDER BY hours_streamed DESC
+      LIMIT 15;
+    """, (user,))
+    favorite_songs = cursor.fetchall()
 
-        cursor.close()
-        conn.close()
+    # 3c) FavoriteGenres for this user
+    cursor.execute("""
+      SELECT
+        sg.genre,
+        COUNT(DISTINCT sl.song_id)           AS num_songs_streamed,
+        ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
+      FROM STREAM_LOG sl
+      JOIN S_GENRE sg ON sl.song_id = sg.song_id
+      WHERE sl.user_name = %s
+      GROUP BY sg.genre
+      ORDER BY hours_streamed DESC
+      LIMIT 3;
+    """, (user,))
+    favorite_genres = cursor.fetchall()
 
-        return render_template(
-            'userView.html',
-            favorite_playlists=fav_playlists,
-            favorite_songs=fav_songs,
-            favorite_genres=fav_genres
-        )
+    cursor.close()
+    conn.close()
+
+    # 4) Render exactly as before, but now filtered
+    return render_template(
+      'userView.html',
+      favorite_playlists=favorite_playlists,
+      favorite_songs=favorite_songs,
+      favorite_genres=favorite_genres
+    )
 
 
 if __name__ == '__main__':

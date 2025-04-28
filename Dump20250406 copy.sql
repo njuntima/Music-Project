@@ -3,6 +3,7 @@
 -- ------------------------------------------------------
 -- Server version	8.0.40-0ubuntu0.24.04.1
 USE CS4604_Crappy_Spotify_Clone;
+UNLOCK TABLES;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -22,7 +23,7 @@ DROP TABLE IF EXISTS `ALBUM`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ALBUM` (
-  `al_id`     INT         NOT NULL,
+  `al_id`     INT         NOT NULL AUTO_INCREMENT,
   `al_title`  VARCHAR(45) DEFAULT NULL,
   `year`      YEAR        DEFAULT NULL,
   `artist`    VARCHAR(45) DEFAULT NULL,
@@ -214,7 +215,7 @@ DROP TABLE IF EXISTS `PLAYLIST`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `PLAYLIST` (
-  `p_id`       INT         NOT NULL,
+  `p_id`       INT         NOT NULL AUTO_INCREMENT,
   `p_name`     VARCHAR(45) DEFAULT NULL,
   `creator`    VARCHAR(45) DEFAULT NULL,
   `is_public`  ENUM('public','private') NOT NULL DEFAULT 'private',
@@ -246,9 +247,8 @@ UNLOCK TABLES;
 -- ------------------------------------------------------
 DROP TABLE IF EXISTS `SONG`;
 CREATE TABLE `SONG` (
-  `song_id`     INT         NOT NULL,
+  `song_id`     INT         NOT NULL AUTO_INCREMENT,
   `name`        VARCHAR(45) DEFAULT NULL,
-  `num_streams` INT         DEFAULT NULL,
   `duration_sec` INT        NOT NULL DEFAULT 0 COMMENT 'Song duration in seconds',
   `year`        YEAR        DEFAULT NULL,
   PRIMARY KEY (`song_id`)
@@ -260,26 +260,26 @@ CREATE TABLE `SONG` (
 LOCK TABLES `SONG` WRITE;
 /*!40000 ALTER TABLE `SONG` DISABLE KEYS */;
 INSERT INTO `SONG` VALUES
-  (1,'Blinding Lights',320000,200,2020),
-  (2,'Shape of You',350000,233,2017),
-  (3,'Shake It Off',120000,219,2014),
-  (4,'Bad Guy',100000,194,2019),
-  (5,'Believer',250000,204,2017),
-  (6,'Old Town Road',180000,157,2019),
-  (7,'Someone You Loved',220000,182,2018),
-  (8,'Dance Monkey',270000,209,2019),
-  (9,'Watermelon Sugar',150000,174,2020),
-  (10,'Havana',130000,217,2017),
-  (11,'Perfect',160000,263,2017),
-  (12,'Shallow',140000,215,2018),
-  (13,'Hello',110000,295,2015),
-  (14,'Cant Stop the Feeling',100000,217,2016),
-  (15,'Stay With Me',90000,172,2014),
-  (16,'Royals',80000,223,2013),
-  (17,'Uptown Funk',100000,269,2014),
-  (18,'Cheap Thrills',70000,196,2016),
-  (19,'Sugar',120000,235,2015),
-  (20,'Rolling in the Deep',100000,228,2011);
+ (1,'Blinding Lights',200,2020),
+ (2,'Shape of You',233,2017),
+ (3,'Shake It Off',219,2014),
+ (4,'Bad Guy',194,2019),
+ (5,'Believer',204,2017),
+ (6,'Old Town Road',157,2019),
+ (7,'Someone You Loved',182,2018),
+ (8,'Dance Monkey',209,2019),
+ (9,'Watermelon Sugar',174,2020),
+ (10,'Havana',217,2017),
+ (11,'Perfect',263,2017),
+ (12,'Shallow',215,2018),
+ (13,'Hello',295,2015),
+ (14,'Cant Stop the Feeling',217,2016),
+ (15,'Stay With Me',172,2014),
+ (16,'Royals',223,2013),
+ (17,'Uptown Funk',269,2014),
+ (18,'Cheap Thrills',196,2016),
+ (19,'Sugar',235,2015),
+ (20,'Rolling in the Deep',228,2011);
 /*!40000 ALTER TABLE `SONG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -427,7 +427,9 @@ INSERT INTO `USER` VALUES
  ('Panic! At The Disco','360ab0a81d9550b26ce7066e33d6edbcd4171ec38ed1703ca7cfc368959502ef', 'artist'),
  ('Post Malone', '6077a49475b62ade0da7b8055baf3c80b67c621acf4d7230a6be3c7a739015cd', 'artist'),
  ('Radiohead', 'b4eba6a912d0e126156e29b42f4885b889f26330b474a3551224fe09cf5e5a13', 'artist'),
- ('The Weeknd', '0b06790c09614118dc46e635d7adf0888cbe5bc1d2affa9265d11d2eeca222a3', 'artist');
+ ('The Weeknd', '0b06790c09614118dc46e635d7adf0888cbe5bc1d2affa9265d11d2eeca222a3', 'artist'),
+ ('admin', 'scrypt:32768:8:1$k1iuFf5pNVVOU6fW$4acf59786aaa89f3da0f2ab5fb95e022376c1ac8abc76e004e35754fa07fe7e4e2efbaf5a4cea49cbb708895e820a7e88e8b097ee10cc49b79e88b7a17f66b32', 'admin'),
+ ('Taylor Swift', 'scrypt:32768:8:1$aHbN9odVlaU52Ylk$8ae5e825165de035f77a8d438a1fc5194f97ac5b038d5a2b9065994bbdfff2386f103c722e78ac372478ac2627962ceb53116e5ff6041192248b79192f5b71f0', 'artist');
 
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 UNLOCK TABLES;
