@@ -243,5 +243,19 @@ def account():
 
     return render_template('account.html', content=session['username'], role=role)
 
+@app.route('/artist-dashboard')
+def artist_dashboard():
+    if 'username' not in session:
+        return redirect(url_for('db'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT artist FROM USER WHERE user_name = %s", ((session['username']),))
+    artist = cursor.fetchall()
+
+    print(artist)
+
+    return render_template('artist.html', artist=artist)
+
 if __name__ == '__main__':
     app.run(debug=True)
