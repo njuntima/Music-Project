@@ -3,6 +3,7 @@
 {% block title %} Account {% endblock %}
 
 {% block content %}
+
 <h1>{{ content }}</h1>
 {% if role.admin %}
     <h2>Admin</h2>
@@ -11,4 +12,24 @@
 {% else %}
     <h2>User</h2>
 {% endif %}
+<div class="about-wrapper"></div>
+<section class="about-description">
+    <h1>Hello {{content}}!</h1>  
+    <h2>Change Password:</h2>
+    <form action="/form_change_password" method="POST">
+        <div class="input-box">
+            <input type="password" name="curr_password" placeholder="Current Password" required>
+        </div>
+        <div class="input-box">
+            <input type="password" name="new_password" placeholder="New Password" required>
+        </div>
+        <div class="input-box">
+            <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
+        </div>
+        <button type="submit" class="btn">Update Password</button>
+    </form>
+    <p>{{info}}</p>
+    </section>
+
+</div>
 {% endblock %}

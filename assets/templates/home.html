@@ -5,24 +5,46 @@
 {% block dbstatus %}{{ dbstatus }}{% endblock %}
 
 {% block content %}
+<h1>Hello {{name}}!</h1>  
+<h2>Welcome to MusicDB!</h2>
+
 <div class="about-wrapper"></div>
 <section class="about-description">
-    <h1>Welcome {{name}}!</h1>  
-    <h2>Change Password:</h2>
-    <form action="/form_change_password" method="POST">
-        <div class="input-box">
-            <input type="password" name="curr_password" placeholder="Current Password" required>
-        </div>
-        <div class="input-box">
-            <input type="password" name="new_password" placeholder="New Password" required>
-        </div>
-        <div class="input-box">
-            <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
-        </div>
-        <button type="submit" class="btn">Update Password</button>
-    </form>
-    <p>{{info}}</p>
-    </section>
+    <h1>Your Playlists</h1>
+  
+    <div class="playlist-container">
 
-</div>
+        <!-- Create New Playlist -->
+        <form action="/create_playlist" method="POST" class="about-wrapper">
+            <div class="input-box">
+                <input type="text" name="p_name" placeholder="New Playlist Name" required>
+            </div>
+            <button type="submit" class="btn">Create Playlist</button>
+        </form>
+    
+        <!-- Add Song to Playlist -->
+        <form action="/add_song_to_playlist" method="POST" class="about-wrapper">
+            <div class="input-box">
+                <input type="text" name="p_name" placeholder="Playlist Name" required>
+            </div>
+            <div class="input-box">
+                <input type="text" name="name" placeholder="Song Name" required>
+            </div>
+            <button type="submit" class="btn">Add Song to Playlist</button>
+        </form>
+    
+        <!-- Remove Song from Playlist -->
+        <form action="/remove_song_from_playlist" method="POST" class="about-wrapper">
+            <div class="input-box">
+                <input type="text" name="p_name" placeholder="Playlist Name" required>
+            </div>
+            <div class="input-box">
+                <input type="text" name="name" placeholder="Song Name" required>
+            </div>
+            <button type="submit" class="btn">Remove Song from Playlist</button>
+        </form>
+    
+    </div>
+    
+  </section>  
 {% endblock %}
