@@ -577,7 +577,7 @@ CREATE TABLE `USER` (
   `admin` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`user_name`),
   KEY `fk_USER_1_idx` (`artist`),
-  CONSTRAINT `fk_USER_1` FOREIGN KEY (`artist`) REFERENCES `ARTIST` (`a_name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_USER_1` FOREIGN KEY (`artist`) REFERENCES `ARTIST` (`a_name`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `is_admin` FOREIGN KEY (`admin`) REFERENCES `ADMIN_STATISTICS` (`admin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
