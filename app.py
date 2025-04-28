@@ -212,13 +212,6 @@ def delete_album(album_id):
 
 @app.route('/view')
 def view():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Top100Songs")
-    topsongs = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
     if session.get('role') == 'admin':
         return redirect(url_for('admin'))
     
@@ -228,11 +221,6 @@ def view():
     if session.get('role') == 'artist':
         return redirect(url_for('artist'))
 
-    return render_template(
-        'view.html',
-        dbstatus="Connected",
-        topsongs=topsongs
-    )
 
 @app.route('/account')
 def account():
@@ -318,7 +306,24 @@ def artist():
     cursor = conn.cursor(dictionary=True)
 
     if role == 'artist':
-        # 1) Top 10 songs
+                # 1) Compute this artist's global rank by total hours streamed
+        cursor.execute("""
+          SELECT artist_rank FROM (
+            SELECT
+              m.a_name                            AS artist_name,
+              ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed,
+              ROW_NUMBER() OVER (
+                ORDER BY SUM(sl.stream_duration) DESC
+              ) AS artist_rank
+            FROM STREAM_LOG sl
+            JOIN MAKES m ON sl.song_id = m.song_id
+            GROUP BY m.a_name
+          ) ranked
+          WHERE artist_name = %s
+        """, (user,))
+        artist_rank = cursor.fetchone().get('artist_rank', None)
+        
+        # 2) Top 10 songs
         cursor.execute("""
           SELECT song_id, song_name,
                  num_streams  AS total_streams,
@@ -350,7 +355,7 @@ def artist():
           'avg_pct_listened': None  # optional: leave blank or compute weighted avg
         }
 
-        # 2) Albums stats (per-album view)
+        # 3) Albums stats (per-album view)
         cursor.execute("""
           SELECT
             al.al_id       AS album_id,
@@ -367,53 +372,18 @@ def artist():
         """, (user,))
         albums = cursor.fetchall()
 
-        # 3) Fastest-growing song (this week vs last)
-        cursor.execute("""
-          SELECT
-            fg.song_name,
-            fg.current_streams    AS total_streams,
-            fg.current_hours      AS hours_streamed,
-            ass.avg_pct_listened,
-            ROUND((fg.current_hours - fg.prev_hours),2) AS weekly_increase
-          FROM (
-            SELECT
-              sl.song_id,
-              s.name AS song_name,
-              SUM(CASE WHEN YEARWEEK(sl.streamed_at,1)=YEARWEEK(CURDATE(),1)
-                       THEN 1 ELSE 0 END) AS current_streams,
-              SUM(CASE WHEN YEARWEEK(sl.streamed_at,1)=YEARWEEK(CURDATE(),1)
-                       THEN sl.stream_duration ELSE 0 END)/3600 AS current_hours,
-              SUM(CASE WHEN YEARWEEK(sl.streamed_at,1)=YEARWEEK(CURDATE(),1)-1
-                       THEN sl.stream_duration ELSE 0 END)/3600 AS prev_hours
-            FROM STREAM_LOG sl
-            JOIN MAKES m ON sl.song_id = m.song_id
-            JOIN SONG s  ON sl.song_id = s.song_id
-            WHERE m.a_name = %s
-            GROUP BY sl.song_id
-            ORDER BY (current_hours - prev_hours) DESC
-            LIMIT 1
-          ) fg
-          JOIN ArtistSongStats ass
-            ON ass.song_id = fg.song_id
-           AND ass.artist_name = %s
-        """, (user, user))
-        fastest = cursor.fetchone()
-
         cursor.close()
         conn.close()
 
         return render_template(
           'artistView.html',
+          artist_rank=artist_rank,
           top_songs=top_songs,
           others=others,
           totals=totals,
-          albums=albums,
-          fastest=fastest
+          albums=albums
         )
 
-    cursor.close()
-    conn.close()
-    return render_template('view.html')
 
 
 if __name__ == '__main__':

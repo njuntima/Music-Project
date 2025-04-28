@@ -346,6 +346,8 @@ INSERT INTO `STREAM_LOG` (`user_name`,`song_id`,`p_id`,`streamed_at`,`stream_dur
   ('amandagreen',9,5,'2025-04-25 09:10:00',174,'no'),
   ('andrewjones',10,5,'2025-04-25 11:25:00',200,'yes'),
   ('jessicapark', 3, 2, '2025-04-26 13:05:00', 219, 'no'),
+  ('jessicapark', 3, 2, '2025-04-28 13:05:00', 219, 'no'),
+  ('jessicapark', 3, 2, '2025-04-28 13:10:00', 219, 'no'),
   ('jessicapark', 7, 4, '2025-04-26 13:09:00',  50, 'yes'),
   ('chrisevans',   4, 2, '2025-04-26 14:22:00', 194, 'no'),
   ('chrisevans',   1, 1, '2025-04-26 15:00:00', 100, 'yes'),
@@ -378,10 +380,6 @@ CREATE TABLE `USER` (
   `user_name`     VARCHAR(45)                             NOT NULL,
   `password_hash` VARCHAR(255)                             DEFAULT NULL,
   `role`          ENUM('user','artist','admin')           NOT NULL DEFAULT 'user',
-  `age_group`     ENUM('18-24','25-34','35-44','45+')     DEFAULT NULL,
-  `country`       VARCHAR(50)                             DEFAULT NULL,
-  `subscription`  ENUM('free','premium','family')         NOT NULL DEFAULT 'free',
-  `joined_date`   DATE                                     DEFAULT NULL,
   PRIMARY KEY (`user_name`)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
@@ -391,46 +389,46 @@ CREATE TABLE `USER` (
 LOCK TABLES `USER` WRITE;
 /*!40000 ALTER TABLE `USER` DISABLE KEYS */;
 INSERT INTO `USER` VALUES
-  ('alexjohnson','9881757f9f006aa219628d38800e53bd3e98752e1263fae786b7b1d46d6e9ce7','user','25-34','USA','premium','2020-01-15'),
-  ('amandagreen','a6656bef55a5d326cd840ba8ecaddc59163e8f8b46db547faecea2814a2f4333','user','18-24','Canada','free','2021-05-20'),
-  ('andrewjones','cd38c46a5dee24f66f34b866e518d0be7471301d89e57d5b8778ddb837cea8fd','user','35-44','UK','family','2019-11-02'),
-  ('chrisevans','a8558bd953326f96e022a080f319587f70a9bd4c28b778afeaad142a94607c82','user','25-34','USA','free','2021-07-12'),
-  ('davidlee2000','6e659deaa85842cdabb5c6305fcc40033ba43772ec00d45c2a3c921741a5e377','user','35-44','USA','free','2018-02-08'),
-  ('emilywang','cb5053319dbf12aba973adcba9dfc61bfc22718eea4bad6e06e9bd278c40053c','user','25-34','China','premium','2019-11-03'),
-  ('emmastone','1db39f0c5888ecceeadae9b94eb36227473256e71b27296760e369466effab2e','user','25-34','USA','free','2023-02-14'),
-  ('jennychen','12dd86c71dfcaf6459c31e7be0be0033f031cc595320dcafea39f9bfc7598a17','user','18-24','USA','free','2020-06-22'),
-  ('jessicapark','9fe3ffa1a06c1aeaaba1fea0c8c80a0e3462207cffb62c63e51bc223405a47c4','user','18-24','USA','free','2019-03-15'),
-  ('johndoe123','5e13e6a64ccb18aabb63024c4467d3be043ab9d7bc8d3fc11cbc81cb2f2682ec','user','18-24','USA','free','2022-08-10'),
-  ('lisawong','6cbc3871e4bfdace28d2e364836a2b77376e5f06fef3eff8c86c0358d57dfe62','user','25-34','China','premium','2018-03-27'),
-  ('michaelscott','e16ab186aa3a0f4f9cd1b39226a6b6c33ca89a366d895bb3e089310f9fb98ad1','user','35-44','USA','free','2020-09-05'),
-  ('mikebrown85','cdb7e829c35faf4ae68f03c4cfc051ef963718aa2ea61f782fbba5efbecd675e','user','35-44','USA','free','2017-12-12'),
-  ('oliviawilson','6beef9fbbc343acf8d0a236551289d8f945d3061fda834e6b9cf63593f862d29','user','18-24','UK','premium','2021-01-08'),
-  ('rachelgreen','d8ceffaba3d0df342ef7ae9c902ca64c4e3b3c92a7f25fa08e4599e1bf3bbd41','user','25-34','USA','free','2019-04-20'),
-  ('robertpark','a5745fd105bdc84104ac2faa54b93f3736e88e1ff27c06501438377ad5a638f5','user','35-44','USA','free','2016-10-31'),
-  ('ryanreynolds','2f833dcc0294603549cd17f8d09674e208d294c2a039ba2459006441736ac1f0','user','35-44','Canada','premium','2018-07-14'),
-  ('sarahsmith','f852b96c50b7f06cbe92bc9100aabc72b33dac76d1fe0872faea0856c485e69d','user','25-34','USA','free','2020-12-02'),
-  ('sophialee','3e7667f5840aa2e9e888ced67915c7550b0552697d48106cdac44fc0d0b447e5','user','18-24','USA','free','2019-05-18'),
-  ('tomhardy','12dcfe87482b2a329e357f09c3bd0a68e000cf8337e6fb8d1de7913334c95918','user','35-44','UK','premium','2018-11-22'),
-  ('Adele', '714a6363158c9ff2e9e429a5e21ff94a0c1e7f6a44770aa9dbfd84f5a9767af9', 'artist', '35-44', 'UK', 'premium', '2011-03-15'),
-  ('Arctic Monkeys', 'c12283a7b86089b4eac735d4a5519cbcd1e4704c028349ed4c84d00449fb2aee', 'artist', '35-44', 'UK', 'free', '2006-01-20'),
-  ('Ariana Grande', '77fc678b730e6ba92b68583a8583753354f25b1c0f6a94de0e00b08eae08c940', 'artist', '25-34', 'USA', 'premium', '2013-05-15'),
-  ('Billie Eilish', 'dab0c8064511d5b8de86a09daa1bc0ca23d33f4a3f654fed7716a10596a0c180', 'artist', '18-24', 'USA', 'free', '2016-08-01'),
-  ('Bruno Mars', '3118143fe6552de4d88032913cf1e10c2a3392d68f866380ef4bfd9d77c7ddec', 'artist', '35-44', 'USA', 'premium', '2010-05-15'),
-  ('Coldplay', '373f69aaf47bbca158e8db69b21f0f77e9b38122e86f0ece746acaba326dd389', 'artist', '35-44', 'UK', 'free', '2005-12-01'),
-  ('Doja Cat', 'de73537177f534cecfeab2f3413299c4fe3bc115cc875bd67a6a269741e0d7af', 'artist', '25-34', 'USA', 'premium', '2018-04-05'),
-  ('Drake', '7cc078f7d75d9eedcf5d12ac4944010dd16d437a491cbd7e3064ba081c1ffe50', 'artist', '35-44', 'Canada', 'premium', '2010-09-15'),
-  ('Dua Lipa', '3d9a0a8e56130be76896f6aa0b579e139f813857e2c2915d37e88154055d708e', 'artist', '25-34', 'UK', 'free', '2015-06-01'),
-  ('Ed Sheeran', '73427dc4cfc8526aee6744e2cc9e51c9436457076f70151b906cc850dbd658c4', 'artist', '25-34', 'UK', 'premium', '2012-09-10'),
-  ('Imagine Dragons', 'ad6f22469349044a2edf620e1d7e4d4b4fdd1158a330ee827ea87e90e6f4d54e', 'artist', '35-44', 'USA', 'free', '2012-10-10'),
-  ('Justin Bieber', '1fb67dbcb2d1e07aaa0ba9988059dc662cdffe190fa9f4fc4636fe9af847a5fe', 'artist', '25-34', 'Canada', 'premium', '2010-05-10'),
-  ('Kendrick Lamar', '213ff78d7cf835f9e51883981e435715d1ad1292fdc06beb63260b548fce881d', 'artist', '35-44', 'USA', 'free', '2012-12-10'),
-  ('Lady Gaga', '142708941609843c070a64bc282122a7095037b063a85bd11cb0c2c5c9dbcb38', 'artist', '35-44', 'USA', 'premium', '2008-05-05'),
-  ('Maroon 5', '20a0c99df804111db78ac038fab14d83e7816107c76fa4ba288b873beaa62419', 'artist', '35-44', 'USA', 'free', '2010-08-08'),
-  ('Panic! At The Disco','360ab0a81d9550b26ce7066e33d6edbcd4171ec38ed1703ca7cfc368959502ef', 'artist', '25-34', 'USA', 'free', '2006-05-01'),
-  ('Post Malone', '6077a49475b62ade0da7b8055baf3c80b67c621acf4d7230a6be3c7a739015cd', 'artist', '25-34', 'USA', 'premium', '2015-11-02'),
-  ('Radiohead', 'b4eba6a912d0e126156e29b42f4885b889f26330b474a3551224fe09cf5e5a13', 'artist','45+','UK','free','2000-11-15'),
-  ('Taylor Swift', '364533da5370ea35bfe2acf2334f0eb630000cfd2ae6441b16414e3ed38cad42', 'artist','35-44','USA','premium','2006-07-01'),
-  ('The Weeknd', '0b06790c09614118dc46e635d7adf0888cbe5bc1d2affa9265d11d2eeca222a3', 'artist','35-44','Canada','premium','2011-12-01');
+  ('alexjohnson','9881757f9f006aa219628d38800e53bd3e98752e1263fae786b7b1d46d6e9ce7','user'),
+ ('amandagreen','a6656bef55a5d326cd840ba8ecaddc59163e8f8b46db547faecea2814a2f4333','user'),
+ ('andrewjones','cd38c46a5dee24f66f34b866e518d0be7471301d89e57d5b8778ddb837cea8fd','user'),
+ ('chrisevans','a8558bd953326f96e022a080f319587f70a9bd4c28b778afeaad142a94607c82','user'),
+ ('davidlee2000','6e659deaa85842cdabb5c6305fcc40033ba43772ec00d45c2a3c921741a5e377','user'),
+ ('emilywang','cb5053319dbf12aba973adcba9dfc61bfc22718eea4bad6e06e9bd278c40053c','user'),
+ ('emmastone','1db39f0c5888ecceeadae9b94eb36227473256e71b27296760e369466effab2e','user'),
+ ('jennychen','12dd86c71dfcaf6459c31e7be0be0033f031cc595320dcafea39f9bfc7598a17','user'),
+ ('jessicapark','9fe3ffa1a06c1aeaaba1fea0c8c80a0e3462207cffb62c63e51bc223405a47c4','user'),
+ ('johndoe123','5e13e6a64ccb18aabb63024c4467d3be043ab9d7bc8d3fc11cbc81cb2f2682ec','user'),
+ ('lisawong','6cbc3871e4bfdace28d2e364836a2b77376e5f06fef3eff8c86c0358d57dfe62','user'),
+ ('michaelscott','e16ab186aa3a0f4f9cd1b39226a6b6c33ca89a366d895bb3e089310f9fb98ad1','user'),
+ ('mikebrown85','cdb7e829c35faf4ae68f03c4cfc051ef963718aa2ea61f782fbba5efbecd675e','user'),
+ ('oliviawilson','6beef9fbbc343acf8d0a236551289d8f945d3061fda834e6b9cf63593f862d29','user'),
+ ('rachelgreen','d8ceffaba3d0df342ef7ae9c902ca64c4e3b3c92a7f25fa08e4599e1bf3bbd41','user'),
+ ('robertpark','a5745fd105bdc84104ac2faa54b93f3736e88e1ff27c06501438377ad5a638f5','user'),
+ ('ryanreynolds','2f833dcc0294603549cd17f8d09674e208d294c2a039ba2459006441736ac1f0','user'),
+ ('sarahsmith','f852b96c50b7f06cbe92bc9100aabc72b33dac76d1fe0872faea0856c485e69d','user'),
+ ('sophialee','3e7667f5840aa2e9e888ced67915c7550b0552697d48106cdac44fc0d0b447e5','user'),
+ ('tomhardy','12dcfe87482b2a329e357f09c3bd0a68e000cf8337e6fb8d1de7913334c95918','user'),
+ ('Adele', '714a6363158c9ff2e9e429a5e21ff94a0c1e7f6a44770aa9dbfd84f5a9767af9', 'artist'),
+ ('Arctic Monkeys', 'c12283a7b86089b4eac735d4a5519cbcd1e4704c028349ed4c84d00449fb2aee', 'artist'),
+ ('Ariana Grande', '77fc678b730e6ba92b68583a8583753354f25b1c0f6a94de0e00b08eae08c940', 'artist'),
+ ('Billie Eilish', 'dab0c8064511d5b8de86a09daa1bc0ca23d33f4a3f654fed7716a10596a0c180', 'artist'),
+ ('Bruno Mars', '3118143fe6552de4d88032913cf1e10c2a3392d68f866380ef4bfd9d77c7ddec', 'artist'),
+ ('Coldplay', '373f69aaf47bbca158e8db69b21f0f77e9b38122e86f0ece746acaba326dd389', 'artist'),
+ ('Doja Cat', 'de73537177f534cecfeab2f3413299c4fe3bc115cc875bd67a6a269741e0d7af', 'artist'),
+ ('Drake', '7cc078f7d75d9eedcf5d12ac4944010dd16d437a491cbd7e3064ba081c1ffe50', 'artist'),
+ ('Dua Lipa', '3d9a0a8e56130be76896f6aa0b579e139f813857e2c2915d37e88154055d708e', 'artist'),
+ ('Ed Sheeran', '73427dc4cfc8526aee6744e2cc9e51c9436457076f70151b906cc850dbd658c4', 'artist'),
+ ('Imagine Dragons', 'ad6f22469349044a2edf620e1d7e4d4b4fdd1158a330ee827ea87e90e6f4d54e', 'artist'),
+ ('Justin Bieber', '1fb67dbcb2d1e07aaa0ba9988059dc662cdffe190fa9f4fc4636fe9af847a5fe', 'artist'),
+ ('Kendrick Lamar', '213ff78d7cf835f9e51883981e435715d1ad1292fdc06beb63260b548fce881d', 'artist'),
+ ('Lady Gaga', '142708941609843c070a64bc282122a7095037b063a85bd11cb0c2c5c9dbcb38', 'artist'),
+ ('Maroon 5', '20a0c99df804111db78ac038fab14d83e7816107c76fa4ba288b873beaa62419', 'artist'),
+ ('Panic! At The Disco','360ab0a81d9550b26ce7066e33d6edbcd4171ec38ed1703ca7cfc368959502ef', 'artist'),
+ ('Post Malone', '6077a49475b62ade0da7b8055baf3c80b67c621acf4d7230a6be3c7a739015cd', 'artist'),
+ ('Radiohead', 'b4eba6a912d0e126156e29b42f4885b889f26330b474a3551224fe09cf5e5a13', 'artist'),
+ ('The Weeknd', '0b06790c09614118dc46e635d7adf0888cbe5bc1d2affa9265d11d2eeca222a3', 'artist');
+
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -495,24 +493,6 @@ JOIN SONG s  ON sl.song_id = s.song_id
 JOIN MAKES m ON s.song_id = m.song_id
 GROUP BY m.a_name, s.song_id, s.name;
 
--- FastestGrowingSong: simple weekly growth in hours streamed (this week vs last week)
-DROP VIEW IF EXISTS FastestGrowingSong;
-CREATE VIEW FastestGrowingSong AS
-SELECT
-  s.song_id,
-  s.name       AS song_name,
-  ROUND(SUM(IF(WEEK(streamed_at,1)=WEEK(CURDATE(),1), stream_duration/3600, 0)),2)       AS hours_this_week,
-  ROUND(SUM(IF(WEEK(streamed_at,1)=WEEK(CURDATE(),1)-1, stream_duration/3600, 0)),2) AS hours_last_week,
-  ROUND(
-    ROUND(SUM(IF(WEEK(streamed_at,1)=WEEK(CURDATE(),1), stream_duration/3600, 0)),2)
-    - ROUND(SUM(IF(WEEK(streamed_at,1)=WEEK(CURDATE(),1)-1, stream_duration/3600, 0)),2)
-  ,2) AS growth_hours
-FROM STREAM_LOG sl
-JOIN SONG s ON sl.song_id = s.song_id
-GROUP BY s.song_id
-ORDER BY growth_hours DESC
-LIMIT 1;
-
 -- ArtistAlbumStats: album count, num streams, hours streamed per artist
 DROP VIEW IF EXISTS ArtistAlbumStats;
 CREATE VIEW ArtistAlbumStats AS
@@ -526,9 +506,6 @@ JOIN MAKES m ON al.al_id = m.al_id
 JOIN SONG s  ON m.song_id = s.song_id
 LEFT JOIN STREAM_LOG sl ON s.song_id = sl.song_id
 GROUP BY al.artist;
-
--- Trend Analysis (reuse HourlyStreamCount)
-
 
 -- =======================================================
 -- 3. User Metrics
@@ -596,7 +573,7 @@ SELECT
 FROM SONG s
 LEFT JOIN STREAM_LOG sl ON s.song_id = sl.song_id
 GROUP BY s.song_id
-ORDER BY num_streams DESC
+ORDER BY hours_streamed DESC
 LIMIT 100;
 
 -- Top100Artists: global top 100 artists
@@ -609,7 +586,7 @@ SELECT
 FROM MAKES m
 JOIN STREAM_LOG sl ON m.song_id = sl.song_id
 GROUP BY m.a_name
-ORDER BY num_streams DESC
+ORDER BY hours_streamed DESC
 LIMIT 100;
 
 -- TopSongsRecent: reuse earlier
@@ -625,7 +602,7 @@ FROM MAKES m
 JOIN STREAM_LOG sl ON m.song_id = sl.song_id
 WHERE sl.streamed_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
 GROUP BY m.a_name
-ORDER BY num_streams DESC
+ORDER BY hours_streamed DESC
 LIMIT 100;
 
 
