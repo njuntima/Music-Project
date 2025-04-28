@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}Your Favorites{% endblock %}
+{% block content %}
+  <section class="user-section">
+    <h1>Your Top Playlists</h1>
+    <table class="stats-table">
+      <tr>
+        <th>Playlist ID</th>
+        <th>Name</th>
+        <th>Streams</th>
+        <th>Hours Streamed</th>
+        <th>Skips per Hour</th>
+      </tr>
+      {% for p in favorite_playlists %}
+      <tr>
+        <td>{{ p.p_id }}</td>
+        <td>{{ p.p_name }}</td>
+        <td>{{ p.num_streams }}</td>
+        <td>{{ p.hours_streamed }}</td>
+        <td>{{ p.avg_skips_per_hour }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h1>Your Top Songs</h1>
+    <table class="stats-table">
+      <tr>
+        <th>Song ID</th>
+        <th>Song Name</th>
+        <th>Genre</th>
+        <th>Streams</th>
+        <th>Hours Streamed</th>
+      </tr>
+      {% for s in favorite_songs %}
+      <tr>
+        <td>{{ s.song_id }}</td>
+        <td>{{ s.song_name }}</td>
+        <td>{{ s.genre }}</td>
+        <td>{{ s.num_streams }}</td>
+        <td>{{ s.hours_streamed }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h1>Your Top Genres</h1>
+    <table class="stats-table">
+      <tr>
+        <th>Genre</th>
+        <th># Songs Streamed</th>
+        <th>Hours Streamed</th>
+      </tr>
+      {% for g in favorite_genres %}
+      <tr>
+        <td>{{ g.genre }}</td>
+        <td>{{ g.num_songs_streamed }}</td>
+        <td>{{ g.hours_streamed }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+
+  <style>
+    .user-section { margin: 80px 20px; }
+    .stats-table {
+      width:100%; border-collapse:collapse; margin-bottom:40px;
+    }
+    .stats-table th, .stats-table td {
+      border:1px solid #ddd; padding:8px; text-align:center;
+    }
+  </style>
+{% endblock %}
