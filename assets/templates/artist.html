@@ -5,7 +5,20 @@
 {% block dbstatus %}{{ dbstatus }}{% endblock %}
 
 {% block content %}
-{% if artist.artist %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+{% if artist.artist %} 
+    <h1>{{ artist.artist }}</h1>
+    {% for album in albums %}
+        <h3>album.al_title</h3>
+        <p>album.year</p>
+        <p>album.artist</p>
+    {% endfor %}
 {% else %}
     <div class="register-artist-container" id="register_artist">
         <form action="/insert_artist" method = "post">

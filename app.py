@@ -146,12 +146,27 @@ def insert_artist():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     a_name = request.form['artist_name']
+
+    cursor.execute("SELECT artist from USER WHERE user_name = %s", (session['username'],))
+    user_artist = cursor.fetchone()
+
+    if user_artist['artist'] != None:
+        flash('Artist for this user already exists. Each user may only have one artist account per user account.')
+        return redirect(url_for('artist_dashboard'))
+
+    cursor.execute("SELECT * from ARTIST WHERE a_name = %s", (a_name,))
+    artist = cursor.fetchone()
+    print(artist)
+    if artist:
+        flash('Artist with this name already exists. Please try a different name.')
+        return redirect(url_for('artist_dashboard'))
+
     cursor.execute("INSERT INTO ARTIST (a_name) VALUES (%s)", (a_name,))
     conn.commit()
     cursor.execute("UPDATE USER SET artist = %s WHERE user_name = %s", (a_name, session['username']))
     conn.commit()
     cursor.close()
-    return redirect(url_for('db'))
+    return redirect(url_for('artist_dashboard'))
 
 
 
@@ -256,9 +271,11 @@ def artist_dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT artist FROM USER WHERE user_name = %s", ((session['username']),))
-    artist = cursor.fetchall()
+    artist = cursor.fetchone()
+    cursor.execute("SELECT * FROM ALBUM WHERE artist = %s", (artist['artist'],))
+    albums = cursor.fetchall()
 
-    return render_template('artist.html', artist=artist)
+    return render_template('artist.html', artist=artist, albums=albums)
 
 if __name__ == '__main__':
     app.run(debug=True)
