@@ -300,6 +300,7 @@ def insert_song():
     name = request.form['name']
     #num_streams = request.form['num_streams']
     year = request.form['year']
+    album_title = request.form['album']
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -307,6 +308,23 @@ def insert_song():
         "INSERT INTO song (name, year) VALUES (%s, %s)",
         (name, year)
     )
+    song_id = cursor.lastrowid
+    
+    al_id = None
+    if album_title:
+        cursor.execute(
+            "SELECT al_id FROM ALBUM WHERE al_title = %s AND artist = %s",
+            (album_title, session['artist'],))
+        row = cursor.fetchone()
+        if row:
+            al_id = row[0]
+        else:
+            flash(f"Album “{album_title}” not found under your artist account.", "warning")
+    cursor.execute(
+        "INSERT INTO MAKES (song_id, a_name, al_id) VALUES (%s, %s, %s)",
+        (song_id, session['artist'], al_id,)
+    )
+
     conn.commit()
     cursor.close()
     return redirect(url_for('artist_dashboard'))
@@ -326,6 +344,7 @@ def insert_album():
         "INSERT INTO album (al_title, year, artist) VALUES (%s, %s, %s)",
         (al_title, year, session['artist'])
     )
+
     conn.commit()
     cursor.close()
     return redirect(url_for('artist_dashboard'))
@@ -379,7 +398,7 @@ def artist_dashboard():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT artist FROM USER WHERE user_name = %s", ((session['username']),))
+    cursor.execute("SELECT artist FROM USER WHERE user_name = %s", (session['username'],))
     artist = cursor.fetchone()
     print(artist)
     print(artist['artist'],)
