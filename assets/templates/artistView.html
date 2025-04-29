@@ -3,59 +3,65 @@
 {% block content %}
 <section class="artist-section">
     <h1>{{ session.username }}’s Dashboard</h1>
-    {% if artist_rank %}
-    <p class="artist-rank">
-        Your global rank by total hours streamed:
-        <strong>#{{ artist_rank }}</strong>
-    </p>
-    {% endif %}
 
-    <h2>Top 10 Songs</h2>
-    <table class="stats-table">
-        <tr>
-            <th>Song</th>
-            <th>Total Streams</th>
-            <th>Hours Streamed</th>
-            <th>Avg % Listened</th>
-        </tr>
-        {% for s in top_songs %}
-        <tr>
-            <td>{{ s.song_name }}</td>
-            <td>{{ s.total_streams }}</td>
-            <td>{{ s.hours_streamed }}</td>
-            <td>{{ s.avg_pct_listened }}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <td><em>Others</em></td>
-            <td>{{ others.total_streams }}</td>
-            <td>{{ others.hours_streamed }}</td>
-            <td>{{ others.avg_pct_listened or '–' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Total</strong></td>
-            <td>{{ totals.total_streams }}</td>
-            <td>{{ totals.hours_streamed }}</td>
-            <td>{{ totals.avg_pct_listened }}</td>
-        </tr>
-    </table>
+    <div class="dashboard-content">
+        <div class="left-column">
+            {% if artist_rank %}
+            <p class="artist-rank">
+                Your global rank by total hours streamed:
+                <strong>#{{ artist_rank }}</strong>
+            </p>
+            {% endif %}
 
-    <h2>Albums</h2>
-    <table class="stats-table">
-        <tr>
-            <th>Album</th>
-            <th>Total Streams</th>
-            <th>Hours Streamed</th>
-        </tr>
-        {% for a in albums %}
-        <tr>
-            <td>{{ a.album_title }}</td>
-            <td>{{ a.total_streams }}</td>
-            <td>{{ a.hours_streamed }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+            <h2>Top 10 Songs</h2>
+            <table class="stats-table">
+                <tr>
+                    <th>Song</th>
+                    <th>Total Streams</th>
+                    <th>Hours Streamed</th>
+                    <th>Avg % Listened</th>
+                </tr>
+                {% for s in top_songs %}
+                <tr>
+                    <td>{{ s.song_name }}</td>
+                    <td>{{ s.total_streams }}</td>
+                    <td>{{ s.hours_streamed }}</td>
+                    <td>{{ s.avg_pct_listened }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><em>Others</em></td>
+                    <td>{{ others.total_streams }}</td>
+                    <td>{{ others.hours_streamed }}</td>
+                    <td>{{ others.avg_pct_listened or '–' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td>{{ totals.total_streams }}</td>
+                    <td>{{ totals.hours_streamed }}</td>
+                    <td>{{ totals.avg_pct_listened }}</td>
+                </tr>
+            </table>
+        </div>
 
+        <div class="right-column">
+            <h2>Albums</h2>
+            <table class="stats-table">
+                <tr>
+                    <th>Album</th>
+                    <th>Total Streams</th>
+                    <th>Hours Streamed</th>
+                </tr>
+                {% for a in albums %}
+                <tr>
+                    <td>{{ a.album_title }}</td>
+                    <td>{{ a.total_streams }}</td>
+                    <td>{{ a.hours_streamed }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 </section>
 
 <style>
@@ -68,6 +74,34 @@
         padding: 20px 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         border-radius: 10px;
+    }
+
+    /* Parent container to hold the left and right columns side by side */
+    .dashboard-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;  /* Space between columns */
+    }
+
+    /* Left column for artist rank and top songs table */
+    .left-column {
+        flex: 1;
+        min-width: 45%; /* Ensures the column is at least 45% wide */
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Right column for albums table */
+    .right-column {
+        flex: 1;
+        min-width: 45%; /* Ensures the column is at least 45% wide */
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     .artist-rank {
