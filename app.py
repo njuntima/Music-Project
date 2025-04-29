@@ -377,7 +377,9 @@ def artist_dashboard():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT artist FROM USER WHERE user_name = %s", ((session['username']),))
     artist = cursor.fetchone()
-    cursor.execute("SELECT * FROM ALBUM WHERE artist = %s", (artist['artist'],))
+    print(artist)
+    print(artist['artist'],)
+    cursor.execute("SELECT * FROM ALBUM WHERE artist = %s", (artist['artist'],)) #prev version
     albums = cursor.fetchall()
 
     return render_template('artist.html', artist=artist, albums=albums)
@@ -532,6 +534,7 @@ def artist():
 
         return render_template(
           'artistView.html',
+          name=session.get('username'),
           artist_rank=artist_rank,
           top_songs=top_songs,
           others=others,

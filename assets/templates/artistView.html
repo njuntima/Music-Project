@@ -2,6 +2,7 @@
 {% block title %}Artist Dashboard{% endblock %}
 {% block content %}
 <section class="artist-section">
+    <h1>{{ session.username }}’s Dashboard</h1>
     {% if artist_rank %}
     <p class="artist-rank">
         Your global rank by total hours streamed:

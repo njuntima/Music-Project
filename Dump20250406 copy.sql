@@ -108,7 +108,8 @@ INSERT INTO `ALBUM` VALUES
   (17,'Purpose',2015,'Justin Bieber'),
   (18,'Planet Her',2021,'Doja Cat'),
   (19,'Maroon 5',2012,'Maroon 5'),
-  (20,'Too Weird to Live, Too Rare to Die!',2013,'Panic! At The Disco');
+  (20,'Too Weird to Live, Too Rare to Die!',2013,'Panic! At The Disco'),
+  (21,'Red',2012,'Taylor Swift');
 /*!40000 ALTER TABLE `ALBUM` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,7 +237,8 @@ INSERT INTO `MAKES` (`song_id`,`a_name`,`al_id`) VALUES
   (2,'Ed Sheeran',5),
   (3,'Taylor Swift',1),
   (4,'Billie Eilish',4),
-  (5,'Imagine Dragons',15);
+  (5,'Imagine Dragons',15),
+  (21,'Taylor Swift',21);
 /*!40000 ALTER TABLE `MAKES` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,7 +308,8 @@ INSERT INTO `SONG` VALUES
  (17,'Uptown Funk',269,2014),
  (18,'Cheap Thrills',196,2016),
  (19,'Sugar',235,2015),
- (20,'Rolling in the Deep',228,2011);
+ (20,'Rolling in the Deep',228,2011),
+ (21,'We Are Never Ever Getting Back Together',192,2012);
 /*!40000 ALTER TABLE `SONG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -393,7 +396,8 @@ INSERT INTO `STREAM_LOG` (`user_name`,`song_id`,`p_id`,`streamed_at`,`stream_dur
   ('rachelgreen', 18, NULL, '2025-04-27 14:11:00', 196, 'no'),
   ('rachelgreen', 19, NULL, '2025-04-27 14:15:00', 235, 'no'),
   ('ryanreynolds',20, NULL, '2025-04-27 15:00:00', 228, 'no'),
-  ('sophialee',   1, NULL, '2025-04-27 15:05:00',  50, 'yes');
+  ('sophialee',   1, NULL, '2025-04-27 15:05:00',  50, 'yes'),
+  ('sophialee',   21, NULL, '2025-04-27 15:10:00',  192, 'no');
 /*!40000 ALTER TABLE `STREAM_LOG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -430,7 +434,7 @@ INSERT INTO `USER` VALUES
 ('johndoe123','5e13e6a64ccb18aabb63024c4467d3be043ab9d7bc8d3fc11cbc81cb2f2682ec',NULL ,NULL),
 ('lisawong','6cbc3871e4bfdace28d2e364836a2b77376e5f06fef3eff8c86c0358d57dfe62',NULL ,NULL),
 ('michaelscott','e16ab186aa3a0f4f9cd1b39226a6b6c33ca89a366d895bb3e089310f9fb98ad1',NULL ,NULL),
-('mikebrown85','cdb7e829c35faf4ae68f03c4cfc051ef963718aa2ea61f782fbba5efbecd675e',NULL ,NULL),
+('mikebrown85','cdb7e829c35faf4ae68f03c4cfc051ef963718aa2ea61f782fbba5efbecd675e',NULL ,NULL),  
 ('oliviawilson','6beef9fbbc343acf8d0a236551289d8f945d3061fda834e6b9cf63593f862d29',NULL ,NULL),
 ('rachelgreen','d8ceffaba3d0df342ef7ae9c902ca64c4e3b3c92a7f25fa08e4599e1bf3bbd41',NULL ,NULL),
 ('robertpark','a5745fd105bdc84104ac2faa54b93f3736e88e1ff27c06501438377ad5a638f5',NULL ,NULL),
@@ -457,10 +461,9 @@ INSERT INTO `USER` VALUES
 ('Post Malone', '6077a49475b62ade0da7b8055baf3c80b67c621acf4d7230a6be3c7a739015cd','Post Malone', NULL),
 ('Radiohead', 'b4eba6a912d0e126156e29b42f4885b889f26330b474a3551224fe09cf5e5a13','Radiohead', NULL),
 ('The Weeknd', '0b06790c09614118dc46e635d7adf0888cbe5bc1d2affa9265d11d2eeca222a3','The Weeknd', NULL),
+('Taylor Swift', 'scrypt:32768:8:1$aHbN9odVlaU52Ylk$8ae5e825165de035f77a8d438a1fc5194f97ac5b038d5a2b9065994bbdfff2386f103c722e78ac372478ac2627962ceb53116e5ff6041192248b79192f5b71f0','Taylor Swift', NULL),
 ('admin', 'scrypt:32768:8:1$k1iuFf5pNVVOU6fW$4acf59786aaa89f3da0f2ab5fb95e022376c1ac8abc76e004e35754fa07fe7e4e2efbaf5a4cea49cbb708895e820a7e88e8b097ee10cc49b79e88b7a17f66b32',NULL, 'admin'),
-('Taylor Swift', 'scrypt:32768:8:1$aHbN9odVlaU52Ylk$8ae5e825165de035f77a8d438a1fc5194f97ac5b038d5a2b9065994bbdfff2386f103c722e78ac372478ac2627962ceb53116e5ff6041192248b79192f5b71f0','Taylor Swift', NULL);
-
-
+('user', 'scrypt:32768:8:1$EGUg0WCTR1JuzRZR$884943890b4819b5122a3b8dafbe951d3cc8a1db84309e0b9f523538e6f234c7deb42c28e8a406c0ad8453130fd2c3dfec737f7d7154564be07c79f8b290755b', NULL, NULL);
 
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -1,78 +1,73 @@
 {% extends "layout.html" %}
 
-{% block title %}MusicDB - Artist-Dashboard{% endblock %}
-
+{% block title %}MusicDB - Artist Dashboard{% endblock %}
 {% block dbstatus %}{{ dbstatus }}{% endblock %}
 
 {% block content %}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% if artist.artist %}
+<h1>{{ artist.artist }} - Dashboard</h1>
+<br />
+
+<div class="dashboard-layout" style="display:flex; gap:20px;">
+    <section class="album-section" style="width:50%;">
+        {% if albums %}
+        {% for album in albums %}
+        <div class="album-card">
+            <h3>{{ album.al_title }}</h3>
+            <p>Released: {{ album.year }}</p>
+            <p>Artist: {{ album.artist }}</p>
+        </div>
         {% endfor %}
-    {% endif %}
-    {% endwith %}
-{% if artist.artist %} 
-    <h1>{{ artist.artist }}</h1>
-    {% for album in albums %}
-        <h3>album.al_title</h3>
-        <p>album.year</p>
-        <p>album.artist</p>
-    {% endfor %}
+        {% else %}
+        <p>No albums found for {{ artist.artist }}.</p>
+        {% endif %}
+    </section>
+
+    <section class="artist-actions" style="width:50%;">
+        <h2>Manage Your Catalog</h2>
+        <div class="action-cards">
+            <div class="action-card">
+                <h3>Create Album</h3>
+                <form action="/insert_album" method="POST">
+                    <input type="text" name="al_title" placeholder="Album Title" required>
+                    <input type="number" name="year" placeholder="Year" required>
+                    <button type="submit" class="btn">Create</button>
+                </form>
+            </div>
+            <div class="action-card">
+                <h3>Add Song</h3>
+                <form action="/insert_song" method="POST">
+                    <input type="text" name="name" placeholder="Song Name" required>
+                    <input type="number" name="year" placeholder="Year" required>
+                    <button type="submit" class="btn">Add</button>
+                </form>
+            </div>
+            <div class="action-card">
+                <h3>Remove Song</h3>
+                <form action="/delete_song" method="POST">
+                    <input type="text" name="name" placeholder="Song Name" required>
+                    <button type="submit" class="btn">Delete</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
 {% else %}
-    <div class="register-artist-container" id="register_artist">
-        <form action="/insert_artist" method = "post">
-            <h1>Register as Artist to MusicDB</h1>
-            <div class="input-box">
-                <input type="text" name="artist_name" placeholder="Artist Name" required>
-                <img src="../static/images/user-interface.png" alt="Username Icon" class="input-icon">
-            </div>
-            <button type="submit" class="btn">Register</button>
-        </form>
-    </div>
-
-    <div class="about-wrapper"></div>
-<section class="about-description">
-    <h1>Create New Songs and Albums!</h1>
-  
-    <div class="playlist-container">
-
-        <!-- Create New album -->
-        <form action="/insert_album" method="POST" class="about-wrapper">
-            <div class="input-box">
-                <input type="text" name="al_title" placeholder="New Album Name" required>
-            </div>
-            <div class="input-box">
-                <input type="number" name="year" placeholder="Year of Release" required>
-            </div>
-            <div class="input-box">
-                <input type="text" name="artist" placeholder="Artist Display Name" required>
-            </div>
-            <button type="submit" class="btn">Create Album</button>
-        </form>
-    
-        <!-- Add Song to the db -->
-        <form action="/insert_song" method="POST" class="about-wrapper">
-            <div class="input-box">
-                <input type="text" name="name" placeholder="Song Name" required>
-            </div>
-            <div class="input-box">
-                <input type="number" name="year" placeholder="Release Year" required>
-            </div>
-            <button type="submit" class="btn">Add Song to Database</button>
-        </form>
-    
-        <!-- Remove Song from Playlist -->
-        <form action="/delete_song" method="POST" class="about-wrapper">
-            <div class="input-box">
-                <input type="text" name="name" placeholder="Song Name" required>
-            </div>
-            <button type="submit" class="btn">Remove Song from Database</button>
-        </form>
-    
-    </div>
-    
-  </section>  
+<div class="register-artist-container" id="register_artist">
+    <form action="/insert_artist" method="post">
+        <h1>Register as Artist</h1>
+        <input type="text" name="artist_name" placeholder="Artist Name" required>
+        <button type="submit" class="btn">Register</button>
+    </form>
+</div>
 {% endif %}
 {% endblock %}
-
