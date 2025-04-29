@@ -1,10 +1,50 @@
 {% extends "layout.html" %}
 
-{% block title %}MusicDB - View{% endblock %}
-
-{% block dbstatus %}{{ dbstatus }}{% endblock %}
+{% block title %}All Songs{% endblock %}
 
 {% block content %}
-<p>{{ content }}</p>
-{% endblock %}
+<section class="about-description">
+  <h1>All Songs</h1>
+  <table class="stats-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Song</th>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Genre</th>
+        <th>Hours Streamed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for song in songs %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ song.song_name }}</td>
+        <td>{{ song.artist_name }}</td>
+        <td>{{ song.album_title or '—' }}</td>
+        <td>{{ song.genre }}</td>
+        <td>{{ song.hours_streamed }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
 
+<style>
+  .stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+  .stats-table th,
+  .stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  .stats-table th {
+    background: rgba(255,255,255,0.2);
+  }
+</style>
+{% endblock %}

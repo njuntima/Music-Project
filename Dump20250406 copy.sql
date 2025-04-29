@@ -637,6 +637,24 @@ CREATE VIEW FavoriteGenres AS
 -- 4. Global Views
 -- =======================================================
 
+DROP VIEW IF EXISTS AllSongsByStreamHours;
+CREATE VIEW AllSongsByStreamHours AS
+SELECT
+  s.song_id,
+  s.name             AS song_name,
+  m.a_name           AS artist_name,
+  al.al_title        AS album_title,
+  sg.genre           AS genre,
+  ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
+FROM SONG s
+LEFT JOIN MAKES m ON s.song_id = m.song_id             -- song↔artist, album foreign key :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+LEFT JOIN ALBUM al ON m.al_id = al.al_id                -- optional album link
+LEFT JOIN S_GENRE sg ON s.song_id = sg.song_id          -- song↔genre :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+LEFT JOIN STREAM_LOG sl ON s.song_id = sl.song_id       -- accumulate duration
+GROUP BY
+  s.song_id, s.name, m.a_name, al.al_title, sg.genre
+ORDER BY hours_streamed DESC;
+
 -- Top100Songs: global top 100 by streams
 DROP VIEW IF EXISTS Top100Songs;
 CREATE VIEW Top100Songs AS

@@ -406,14 +406,20 @@ def artist_dashboard():
     albums = cursor.fetchall()
 
     return render_template('artist.html', artist=artist, albums=albums)
-    return render_template('account.html', content="DB Account")
 
 @app.route('/view')
 def view():
+
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM AllSongsByStreamHours;")
+    songs = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
     return render_template(
         'view.html',
-        dbstatus="Connected",
-        content=session.get('role')
+        songs=songs
     )
 
 @app.route('/stats')
