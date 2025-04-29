@@ -58,9 +58,15 @@ def login():
         return render_template('index.html',info = 'ERROR: User not found') 
 
     if check_password_hash(user['password_hash'], password):
-        session['username'] = username 
-        session['role'] = user['role']
-        print(session.get('role'))
+        session['username'] = username
+
+        if user.get('admin'):
+            session['role'] = 'admin'
+        elif user.get('artist'):
+            session['role'] = 'artist'
+        else:
+            session['role'] = 'user'
+
         return redirect(url_for('home', name=username))
     else:
         return render_template('index.html',info = 'ERROR: Wrong password')
