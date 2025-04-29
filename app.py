@@ -467,6 +467,14 @@ def artist():
     cursor = conn.cursor(dictionary=True)
 
     if role == 'artist':
+        # fetch this user’s artist handle
+        cursor.execute(
+            "SELECT artist FROM USER WHERE user_name = %s",
+            (user,)
+        )
+        user_row = cursor.fetchone()
+        artist_name = user_row['artist'] if user_row else None
+
         # 1) Compute this artist's global rank by total hours streamed
         cursor.execute("""
           SELECT artist_rank FROM (
@@ -481,8 +489,9 @@ def artist():
             GROUP BY m.a_name
           ) ranked
           WHERE artist_name = %s
-        """, (user,))
-        artist_rank = cursor.fetchone().get('artist_rank', None)
+        """, (artist_name,))
+        rank_row = cursor.fetchone()
+        artist_rank = rank_row['artist_rank'] if rank_row else None
         
         # 2) Top 10 songs
         cursor.execute("""
@@ -494,7 +503,7 @@ def artist():
            WHERE artist_name = %s
            ORDER BY hours_streamed DESC
            LIMIT 10
-        """, (user,))
+        """, (artist_name,))
         top_songs = cursor.fetchall()
 
         # Totals across all songs
@@ -505,14 +514,16 @@ def artist():
             ROUND( AVG(avg_pct_listened), 2 ) AS avg_pct_listened
           FROM ArtistSongStats
           WHERE artist_name = %s
-        """, (user,))
+        """, (artist_name,))
         totals = cursor.fetchone()
 
         # “Others” = everything beyond top 10
         # (we’ll compute these in Python by subtracting)
         others = {
-          'total_streams':   totals['total_streams']   - sum(r['total_streams']   for r in top_songs),
-          'hours_streamed':  totals['hours_streamed']  - sum(r['hours_streamed']  for r in top_songs),
+          'total_streams':   (totals['total_streams'] or 0)
+                             - sum(r['total_streams']   for r in top_songs),
+          'hours_streamed':  (totals['hours_streamed'] or 0)
+                             - sum(r['hours_streamed']  for r in top_songs),
           'avg_pct_listened': None  # optional: leave blank or compute weighted avg
         }
 
@@ -530,7 +541,7 @@ def artist():
           WHERE m.a_name = %s
           GROUP BY al.al_id, al.al_title
           ORDER BY hours_streamed DESC
-        """, (user,))
+        """, (artist_name,))
         albums = cursor.fetchall()
 
         cursor.close()
@@ -545,6 +556,7 @@ def artist():
           totals=totals,
           albums=albums
         )
+
     
 @app.route('/user')
 def user():
