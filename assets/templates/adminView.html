@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
 {% block title %}Admin Dashboard{% endblock %}
+
+{% block body_class %}admin-dashboard{% endblock %}
+
 {% block content %}
 <section class="admin-section">
     <h1>System Counts</h1>
@@ -40,25 +43,63 @@
     </table>
 
     <h2>Hourly Stream Count</h2>
-    {{ chart }}
+    <div class="chart-container">
+        {{ chart }}
+    </div>
 </section>
 
 <style>
-    .admin-section {
-        margin: 80px 20px;
-    }
 
-    .stats-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 40px;
-    }
+.admin-section {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 900px; 
+    margin: 80px auto 0;  
+    padding: 20px;
+    box-sizing: border-box;
+}
 
-    .stats-table th,
-    .stats-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-    }
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;  
+
+
+    table-layout: fixed;  
+}
+
+.stats-table th,
+.stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+
+
+
+    word-wrap: break-word;  
+}
+
+.stats-table th {
+    width: 15%;  
+}
+
+.stats-table td {
+    width: 15%;  
+}
+
+
+.chart-container {
+    width: 100%;
+    margin-top: 20px;  
+    height: 200px;  
+}
+
+.chart-container canvas {
+    width: 50% ;  
+    height: 50% ;  
+}
+
+
 </style>
 {% endblock %}
