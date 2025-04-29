@@ -2,10 +2,13 @@
 
 Use dump copy:
 
-# To add admin
-## go to admin_statistics table:
-insert admin values:
+# To add admin:
+
+1)
+Go to admin_statistics table:
+Insert admin values:
 admin_id: 'admin', admin_username: '<username from user table>',total_actions:0,startdate:now()
 
-## go to user table:
-change admin column to 'admin'
+2)
+Go to the user table:
+Change admin column to 'admin'
