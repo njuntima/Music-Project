@@ -655,5 +655,69 @@ def user():
     )
 
 
+@app.route('/playlist', methods=['GET', 'POST'])
+def playlist_view():
+    if 'username' not in session:
+        return redirect(url_for('db'))
+
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # 1) Fetch this user's private playlists
+    cursor.execute(
+        "SELECT p_id, p_name FROM PLAYLIST WHERE creator = %s",
+        (session['username'],)
+    )
+    private_pls = cursor.fetchall()
+
+    # 2) Fetch all public playlists
+    cursor.execute(
+        "SELECT p_id, p_name FROM PLAYLIST WHERE is_public = 'public'"
+    )
+    public_pls = cursor.fetchall()
+
+    playlists = {
+      "Your Playlists": private_pls,
+      "Public Playlists": public_pls
+    }
+
+    songs = []
+    selected_pid = None
+
+    # 3) If the user has submitted the form, load the songs in that playlist
+    if request.method == 'POST':
+        selected_pid = int(request.form['playlist_id'])
+        cursor.execute("""
+          SELECT
+            s.song_id,
+            s.name         AS song_name,
+            m.a_name       AS artist_name,
+            al.al_title    AS album_title,
+            sg.genre       AS genre,
+            ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
+          FROM COMPOSED_OF co
+          JOIN SONG s    ON co.song_id = s.song_id
+          LEFT JOIN MAKES m ON s.song_id = m.song_id        -- song→artist/album link :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+          LEFT JOIN ALBUM al ON m.al_id = al.al_id           -- optional album
+          LEFT JOIN S_GENRE sg ON s.song_id = sg.song_id     -- song→genre :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+          LEFT JOIN STREAM_LOG sl
+            ON s.song_id = sl.song_id AND sl.p_id = %s       -- only streams in this playlist
+          WHERE co.p_id = %s
+          GROUP BY
+            s.song_id, s.name, m.a_name, al.al_title, sg.genre
+          ORDER BY hours_streamed DESC
+        """, (selected_pid, selected_pid))
+        songs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return render_template(
+      'playlist.html',
+      playlists=playlists,
+      songs=songs,
+      selected_pid=selected_pid
+    )
+
+
 if __name__ == '__main__':
     app.run(debug=True)

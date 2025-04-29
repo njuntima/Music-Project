@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}Playlist Details{% endblock %}
+
+{% block content %}
+<section class="about-description">
+  <h1>View Playlist</h1>
+
+  <form method="POST">
+    <div class="input-box">
+      <label for="playlist_id">Choose a playlist:</label>
+      <select name="playlist_id" id="playlist_id" required>
+        {% for group, pls in playlists.items() %}
+          <optgroup label="{{ group }}">
+            {% for p in pls %}
+              <option value="{{ p.p_id }}"
+                      {% if p.p_id == selected_pid %}selected{% endif %}>
+                {{ p.p_name }}
+              </option>
+            {% endfor %}
+          </optgroup>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn">Show Songs</button>
+  </form>
+
+  {% if songs %}
+    <h2>Songs in “{{ playlists["Your Playlists"] 
+                         | selectattr("p_id","equalto",selected_pid) 
+                         | map(attribute="p_name") 
+                         | list 
+                         | first or 
+                         playlists["Public Playlists"] 
+                         | selectattr("p_id","equalto",selected_pid) 
+                         | map(attribute="p_name") 
+                         | list 
+                         | first }}”</h2>
+
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Song</th>
+          <th>Artist</th>
+          <th>Album</th>
+          <th>Genre</th>
+          <th>Hours Streamed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for song in songs %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ song.song_name }}</td>
+            <td>{{ song.artist_name }}</td>
+            <td>{{ song.album_title or "—" }}</td>
+            <td>{{ song.genre }}</td>
+            <td>{{ song.hours_streamed }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+
+<style>
+  .stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .stats-table th,
+  .stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  .stats-table th {
+    background: rgba(255,255,255,0.2);
+  }
+</style>
+{% endblock %}
