@@ -64,6 +64,7 @@ def login():
             session['role'] = 'admin'
         elif user.get('artist'):
             session['role'] = 'artist'
+            session['artist'] = user.get('artist')
         else:
             session['role'] = 'user'
 
@@ -176,6 +177,8 @@ def insert_artist():
     cursor.execute("INSERT INTO ARTIST (a_name) VALUES (%s)", (a_name,))
     conn.commit()
     cursor.execute("UPDATE USER SET artist = %s WHERE user_name = %s", (a_name, session['username']))
+    session['artist'] = a_name
+    session['role'] = 'artist'
     conn.commit()
     cursor.close()
     return redirect(url_for('artist_dashboard'))
@@ -314,13 +317,14 @@ def insert_album():
     #al_id = request.form['al_id']
     al_title = request.form['al_title']
     year = request.form['year']
-    artist = request.form['artist']
+    #artist = request.form['artist']
+    print(session['username'])
 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO album (al_title, year, artist) VALUES (%s, %s, %s)",
-        (al_title, year, artist)
+        (al_title, year, session['artist'])
     )
     conn.commit()
     cursor.close()
