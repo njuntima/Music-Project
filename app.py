@@ -687,7 +687,7 @@ def playlist_view():
         cursor.execute("""
           SELECT
             s.song_id,
-            s.name         AS name,
+            s.name         AS song_name,
             m.a_name       AS artist_name,
             al.al_title    AS album_title,
             sg.genre       AS genre,
@@ -705,7 +705,7 @@ def playlist_view():
           ORDER BY hours_streamed DESC
         """, (selected_pid, selected_pid))
         songs = cursor.fetchall()
-
+        print(songs)
     cursor.close()
     conn.close()
     return render_template(
