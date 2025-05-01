@@ -212,25 +212,23 @@ def add_song_to_playlist():
     cursor = conn.cursor()
 
     try:
-        # Retrieve playlist_id based on playlist_name
         cursor.execute('SELECT p_id FROM playlist WHERE p_name = %s', (playlist_name,))
         playlist_result = cursor.fetchone()
         if not playlist_result:
             flash(f'Playlist with name "{playlist_name}" not found.', 'error')
             return redirect(url_for('index'))
 
-        playlist_id = playlist_result['p_id']
-
-        # Retrieve song_id based on song_name
-        cursor.execute('SELECT song_id FROM songs WHERE song_name = %s', (song_name,))
+        playlist_id = playlist_result[0]  
+        
+        cursor.execute('SELECT song_id FROM song WHERE name = %s', (song_name,))
         song_result = cursor.fetchone()
         if not song_result:
             flash(f'Song with name "{song_name}" not found.', 'error')
             return redirect(url_for('index'))
 
-        song_id = song_result['song_id']
+        song_id = song_result[0] 
 
-        # Insert into the composed_of join table
+ 
         cursor.execute(
             'INSERT INTO composed_of (p_id, song_id) VALUES (%s, %s)',
             (playlist_id, song_id)
@@ -247,34 +245,32 @@ def add_song_to_playlist():
 
     return redirect(url_for('view'))
 
+
 @app.route('/remove_song_from_playlist', methods=['POST'])
 def remove_song_from_playlist():
-    playlist_name = request.form['p_name']  # Playlist name from the form
-    song_name = request.form['name']  # Song name from the form
+    playlist_name = request.form['p_name']  
+    song_name = request.form['name']  
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Retrieve playlist_id based on playlist_name
         cursor.execute('SELECT p_id FROM playlist WHERE p_name = %s', (playlist_name,))
         playlist_result = cursor.fetchone()
         if not playlist_result:
             flash(f'Playlist with name "{playlist_name}" not found.', 'error')
             return redirect(url_for('index'))
 
-        playlist_id = playlist_result['p_id']
+        playlist_id = playlist_result[0]  
 
-        # Retrieve song_id based on song_name
-        cursor.execute('SELECT song_id FROM song WHERE song_name = %s', (song_name,))
+        cursor.execute('SELECT song_id FROM song WHERE name = %s', (song_name,))
         song_result = cursor.fetchone()
         if not song_result:
             flash(f'Song with name "{song_name}" not found.', 'error')
             return redirect(url_for('index'))
 
-        song_id = song_result['song_id']
+        song_id = song_result[0]  
 
-        # Delete from the composed_of join table
         cursor.execute(
             'DELETE FROM composed_of WHERE p_id = %s AND song_id = %s',
             (playlist_id, song_id)
@@ -290,6 +286,7 @@ def remove_song_from_playlist():
         conn.close()
 
     return redirect(url_for('view'))
+
 
 
 
@@ -520,7 +517,7 @@ def artist():
         
         # 2) Top 10 songs
         cursor.execute("""
-          SELECT song_id, song_name,
+          SELECT song_id, name,
                  num_streams  AS total_streams,
                  hours_streamed,
                  avg_pct_listened
@@ -614,7 +611,7 @@ def user():
     cursor.execute("""
       SELECT
         s.song_id,
-        s.name        AS song_name,
+        s.name        AS name,
         sg.genre      AS genre,
         COUNT(*)      AS num_streams,
         ROUND(SUM(sl.stream_duration)/3600,2) AS hours_streamed
@@ -690,7 +687,7 @@ def playlist_view():
         cursor.execute("""
           SELECT
             s.song_id,
-            s.name         AS song_name,
+            s.name         AS name,
             m.a_name       AS artist_name,
             al.al_title    AS album_title,
             sg.genre       AS genre,
